@@ -1,6 +1,3 @@
-export function topColor(tube) {
-    return tube[tube.length - 1]
-}
 
 function countTopSibling(tube) {
     if (tube.length < 2) {
@@ -17,47 +14,75 @@ function countTopSibling(tube) {
     return tube.length;
 }
 
-function emptySpaces(tube) {
-    return 4 - tube.length;
-}
-
 export function moveWater(from, to) {
-    if (isTubeEmpty(from) || isDone(from)) {
+    if (from.empty || from.done) {
         throw Error('source-invalid');
     }
-    if (isTubeFull(to)) {
+    if (to.full) {
         throw Error('target-full');
     }
 
-    const color = topColor(from);
-    if (to.length > 0 && color !== topColor(to)) {
+    const color = from.topColor;
+    if (to.length > 0 && color !== to.topColor) {
         throw Error('invalid-color');
     }
 
-    const numBlocks = Math.min(countTopSibling(from), emptySpaces(to));
-    const first = from.slice(0, -numBlocks);
+    const numBlocks = Math.min(countTopSibling(from.levels), to.emptySpace);
+    const first = from.levels.slice(0, -numBlocks);
     const moved = Array(numBlocks).fill(color);
-    const second = [...to, ...moved];
-    return [first, second];
-}
-
-export function isDone(tube) {
-    if (tube.length < 4) {
-        return false;
-    }
-    return tube[0] === tube[1] && tube[1] === tube[2] && tube[2] == tube[3];
+    const second = [...to.levels, ...moved];
+    return [new Tube(from.id, first), new Tube(to.id, second)];
 }
 
 export function isGameWon(tubes) {
-    return tubes.map(tube => isDone(tube) || tube.length === 0)
+    return tubes.map(tube => tube.done || tube.length === 0)
         .reduce((a, b) => a && b, true);
 }
 
-function isTubeEmpty(tube) {
-    return tube.length === 0;
+function ordinal(num) {
+    switch (num) {
+        case 1:
+            return '1st';
+        case 2:
+            return '2nd';
+        case 3:
+            return '3rd';
+        default:
+            return num + 'th';
+    }
 }
 
-function isTubeFull(tube) {
-    return tube.length >= 4;
+export class Tube {
+    constructor(id, levels = []) {
+        this.id = id
+        this.levels = levels
+    }
+
+    get name() {
+        return ordinal(this.id + 1)
+    }
+
+    get empty() {
+        return this.levels.length === 0;
+    }
+
+    get full() {
+        return this.levels.length >= 4;
+    }
+
+    get emptySpace() {
+        return 4 - this.levels.length;
+    }
+
+    get done() {
+        return this.levels.length === 4 &&
+            this.levels[0] === this.levels[1] &&
+            this.levels[1] === this.levels[2] &&
+            this.levels[2] == this.levels[3];
+    }
+
+    get topColor() {
+        return this.levels[this.levels.length - 1]
+    }
 }
 

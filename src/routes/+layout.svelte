@@ -10,13 +10,6 @@
 </div>
 
 <style>
-    :global(html, body) {
-        height: 100vh;
-    }
-    :global(body) {
-        background-color: hsl(252, 89%, 10%);
-        color: white;
-    }
     .root-container {
         max-width: 50rem;
         height: 100%;

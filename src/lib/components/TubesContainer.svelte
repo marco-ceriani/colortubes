@@ -1,7 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 	import Tube from './Tube.svelte';
-	import { isDone } from '$lib/game/logic';
 
 	const dispatch = createEventDispatcher();
 
@@ -9,9 +8,10 @@
 	let selected = null;
 
 	function selectTube(id) {
+        console.log(`id: ${id} - selected: ${selected}`)
 		if (selected === null) {
 			selected = id;
-		} else if (selected !== id && !isDone(tubes[id])) {
+		} else if (selected !== id && !tubes[id].done) {
 			dispatch('move', {
 				from: selected,
 				to: id
@@ -25,13 +25,11 @@
 </script>
 
 <div class="tubes-container">
-	{#each tubes as tube, index}
+	{#each tubes as tube}
 		<Tube
-			levels={tube}
-			selected={selected === index}
-			closed={isDone(tube)}
-            name={index + 1}
-			on:click={() => selectTube(index)}
+            tube={tube}
+			selected={selected === tube.id}
+			on:click={() => selectTube(tube.id)}
 		/>
 	{/each}
 </div>

@@ -1,39 +1,26 @@
 <script>
 	import Tubes from '$lib/components/TubesContainer.svelte';
     import Moves from '$lib/components/MovesLog.svelte';
-	import { moveWater, isGameWon, topColor } from '$lib/game/logic.js';
+	import { moveWater, isGameWon, Tube } from '$lib/game/logic.js';
 
 	let won = false;
 
 	let intial_tubes = [
-		['brown', 'purple', 'cyan', 'orange'],
-		['red', 'pink', 'pink', 'pink'],
-		['dodgerblue', 'cyan', 'purple', 'cyan'],
-		['blue', 'dodgerblue', 'orange', 'brown'],
-		['brown', 'dodgerblue', 'purple', 'blue'],
-		['blue', 'dodgerblue', 'green', 'pink'],
+		new Tube(0, ['brown', 'purple', 'cyan', 'orange']),
+		new Tube(1, ['red', 'pink', 'pink', 'pink']),
+		new Tube(2, ['dodgerblue', 'cyan', 'purple', 'cyan']),
+		new Tube(3, ['blue', 'dodgerblue', 'orange', 'brown']),
+		new Tube(4, ['brown', 'dodgerblue', 'purple', 'blue']),
+		new Tube(5, ['blue', 'dodgerblue', 'green', 'pink']),
 
-		['orange', 'red', 'purple', 'cyan'],
-		['red', 'green', 'brown', 'green'],
-		['red', 'blue', 'orange', 'green'],
-		[],
-		[]
+		new Tube(6, ['orange', 'red', 'purple', 'cyan']),
+		new Tube(7, ['red', 'green', 'brown', 'green']),
+		new Tube(8, ['red', 'blue', 'orange', 'green']),
+		new Tube(9, []),
+		new Tube(10, [])
 	];
 	let tubes = [...intial_tubes];
 	let moves = [];
-
-	function ordinal(num) {
-		switch (num) {
-			case 1:
-				return '1st';
-			case 2:
-				return '2nd';
-			case 3:
-				return '3rd';
-			default:
-				return num + 'th';
-		}
-	}
 
 	function onMoveWater(event) {
 		const { from, to } = event.detail;
@@ -44,7 +31,7 @@
 			newTubes[to] = res[1];
 			tubes = newTubes;
 			won = isGameWon(tubes);
-			moves = [...moves, `${topColor(tubes[to])} from ${ordinal(from + 1)} to ${ordinal(to + 1)}`];
+			moves = [...moves, `${tubes[to].topColor} from ${tubes[from].name} to ${tubes[to].name}`];
 		} catch (error) {
 			console.log(error.message);
 		}
