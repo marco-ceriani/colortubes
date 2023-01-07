@@ -11,7 +11,7 @@ describe("tube status", () => {
     })
 
     it('full tube with different colors', () => {
-        const tube = new Tube(0, [1, 2, 3, 4])
+        const tube = new Tube(0, ['wtr1', 'wtr2', 'wtr0', 'wtr4'])
         expect(tube.empty).toBeFalsy()
         expect(tube.full).toBeTruthy()
         expect(tube.done).toBeFalsy()
@@ -19,7 +19,7 @@ describe("tube status", () => {
     })
 
     it('complete tube', () => {
-        const tube = new Tube(0, [1, 1, 1, 1])
+        const tube = new Tube(0, ['wtr1', 'wtr1', 'wtr1', 'wtr1'])
         expect(tube.empty).toBeFalsy()
         expect(tube.full).toBeTruthy()
         expect(tube.done).toBeTruthy()
@@ -34,22 +34,22 @@ describe("tube status", () => {
 describe('basic logic', () => {
     it ('empty tubes accept anything', () => {
         const tube = new Tube(0)
-        expect(tube.accepts('red')).toBeTruthy()
-        expect(tube.accepts('blue')).toBeTruthy()
+        expect(tube.accepts('wtr0')).toBeTruthy()
+        expect(tube.accepts('wtr1')).toBeTruthy()
     })
 
     it ('full tubes accept nothing', () => {
-        const tube = new Tube(0, ['red', 'red', 'red', 'red'])
-        expect(tube.accepts('blue')).toBeFalsy()
-        expect(tube.accepts('red')).toBeFalsy()
+        const tube = new Tube(0, ['wtr0', 'wtr0', 'wtr0', 'wtr0'])
+        expect(tube.accepts('wtr1')).toBeFalsy()
+        expect(tube.accepts('wtr0')).toBeFalsy()
     })
 
     it ('half-full tubes accept same color', () => {
-        const tube = new Tube(0, ['red'])
-        expect(tube.accepts('blue')).toBeFalsy()
-        expect(tube.accepts('red')).toBeTruthy()
-        expect(tube.accepts('red')).toBe(3)
-        tube.levels = ['red', 'red']
-        expect(tube.accepts('red')).toBe(2)
+        const tube = new Tube(0, ['wtr0'])
+        expect(tube.accepts('wtr1')).toBeFalsy()
+        expect(tube.accepts('wtr0')).toBeTruthy()
+        expect(tube.accepts('wtr0')).toBe(3)
+        tube.levels = ['wtr0', 'wtr0']
+        expect(tube.accepts('wtr0')).toBe(2)
     })
 })
