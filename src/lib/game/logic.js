@@ -1,4 +1,4 @@
-function topColor(tube) {
+export function topColor(tube) {
     return tube[tube.length - 1]
 }
 

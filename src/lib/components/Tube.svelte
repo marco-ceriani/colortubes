@@ -1,27 +1,26 @@
 <script>
     export let levels = []
+    export let name;
     export let selected = false;
     export let closed = false;
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="whole-tube" class:selected={selected} on:click>
-    <div class="plug" class:unplugged={!closed}></div>
-    <div class="tube">
+<div class="tube-slot">
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div class="tube" class:selected={selected} on:click>
+        <div class="plug" class:unplugged={!closed}></div>
         {#each levels as level}
             <div class="waterblock" style:background-color="var(--clr-{level})"></div>
         {/each}
     </div>
+    <h4>{name}</h4>
 </div>
 
 <style>
-    .whole-tube {
-        height: 13rem;
-        margin-bottom: 0;
-    }
     .tube {
         width: 3rem;
         height: 12rem;
+        margin-inline: auto;
         display: flex;
         flex-direction: column-reverse;
         border: 2px solid white;
@@ -39,11 +38,17 @@
         height: 25%;
     }
     .plug {
+        order: 99;
         height: 0.75rem;
         width: 3rem;
         background-color: #604E42;
     }
     .plug.unplugged {
         visibility: hidden;
+    }
+    h4 {
+        text-align: center;
+        margin-block-start: 0.5rem;
+        font-size: 1.25rem;
     }
 </style>

@@ -30,6 +30,7 @@
 			levels={tube}
 			selected={selected === index}
 			closed={isDone(tube)}
+            name={index + 1}
 			on:click={() => selectTube(index)}
 		/>
 	{/each}
