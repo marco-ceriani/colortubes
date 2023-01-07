@@ -1,8 +1,8 @@
 <script>
     import Tubes from '$lib/components/TubesContainer.svelte'
-    import { moveWater } from '$lib/game/logic.js'
+    import { moveWater, isGameWon } from '$lib/game/logic.js'
 
-    const colors = ['orange', 'cyan', 'purple', 'brown', 'pink', 'red', 'dodgerblue', 'blue', 'green']
+    let won = false;
 
     let tubes = [
         ['brown', 'purple', 'cyan', 'orange'],
@@ -27,10 +27,13 @@
             newTubes[from] = res[0]
             newTubes[to] = res[1]
             tubes = newTubes
+            won = isGameWon(tubes)
         } catch (error) {
             console.log(error.message)
         }
     }
+
+    $: console.log(`Won? ${won}`)
 </script>
 
 <Tubes tubes={tubes} on:move={onMoveWater} />

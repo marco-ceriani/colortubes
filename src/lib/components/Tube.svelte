@@ -9,7 +9,7 @@
     <div class="plug" class:unplugged={!closed}></div>
     <div class="tube">
         {#each levels as level}
-            <div class="waterblock" style:background-color={level}></div>
+            <div class="waterblock" style:background-color="var(--clr-{level})"></div>
         {/each}
     </div>
 </div>
