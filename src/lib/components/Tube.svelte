@@ -5,8 +5,8 @@
 
 <div class="tube-slot">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="tube" class:selected={selected} on:click>
-        <div class="plug" class:unplugged={!tube.done}></div>
+    <div class="tube" class:selected={selected} class:unplugged={!tube.done} on:click>
+        <div class="plug"></div>
         {#each tube.levels as level}
             <div class="waterblock" style:background-color="var(--clr-{level})"></div>
         {/each}
@@ -25,7 +25,7 @@
         border-radius: 0% 0% 100vw 100vw;
         overflow: hidden;
     }
-    .tube:hover {
+    .tube.unplugged:hover {
         box-shadow: 0px 0px 6px 4px hsl(66.6, 100%, 60%);
     }
     .selected {
@@ -41,7 +41,7 @@
         width: 3rem;
         background-color: #604E42;
     }
-    .plug.unplugged {
+    .unplugged .plug {
         visibility: hidden;
     }
     h4 {

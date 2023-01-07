@@ -9,18 +9,20 @@
 
 	function selectTube(id) {
         console.log(`id: ${id} - selected: ${selected}`)
-		if (selected === null) {
-			selected = id;
-		} else if (selected !== id && !tubes[id].done) {
-			dispatch('move', {
-				from: selected,
-				to: id
-			});
-			selected = null;
-		} else {
-			console.log('deselecting');
-			selected = null;
-		}
+        if (!tubes[id].done) {
+            if (selected === null) {
+                selected = id;
+            } else if (selected !== id && !tubes[id].done) {
+                dispatch('move', {
+                    from: selected,
+                    to: id
+                });
+                selected = null;
+            } else {
+                console.log('deselecting');
+                selected = null;
+            }
+        }
 	}
 </script>
 
