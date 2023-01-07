@@ -84,5 +84,19 @@ export class Tube {
     get topColor() {
         return this.levels[this.levels.length - 1]
     }
+
+    accepts(color) {
+        if (this.empty) {
+            return 4;
+        }
+        if (this.full) {
+            return 0;
+        }
+        if (this.topColor === color) {
+            return this.emptySpace;
+        } else {
+            return 0;
+        }
+    }
 }
 
