@@ -8,7 +8,6 @@
 	let selected = null;
 
 	function selectTube(id) {
-        console.log(`id: ${id} - selected: ${selected}`)
         if (!tubes[id].done) {
             if (selected === null) {
                 selected = id;
@@ -19,7 +18,6 @@
                 });
                 selected = null;
             } else {
-                console.log('deselecting');
                 selected = null;
             }
         }

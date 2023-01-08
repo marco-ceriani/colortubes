@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Tube } from './logic';
+import { Tube } from './tube';
 
 describe("tube status", () => {
     it('empty tube', () => {
@@ -8,6 +8,8 @@ describe("tube status", () => {
         expect(tube.full).toBeFalsy()
         expect(tube.done).toBeFalsy()
         expect(tube.emptySpace).toBe(4)
+        expect(tube.topAmount).toBe(0)
+        expect(tube.topColor).toBeNull()
     })
 
     it('full tube with different colors', () => {
@@ -16,6 +18,7 @@ describe("tube status", () => {
         expect(tube.full).toBeTruthy()
         expect(tube.done).toBeFalsy()
         expect(tube.emptySpace).toBe(0)
+        expect(tube.topAmount).toBe(1)
     })
 
     it('complete tube', () => {
@@ -25,13 +28,25 @@ describe("tube status", () => {
         expect(tube.done).toBeTruthy()
         expect(tube.emptySpace).toBe(0)
     })
+
+    it('one level', () => {
+        const tube = new Tube(0, ['wtr3'])
+        expect(tube.topColor).toBe('wtr3')
+        expect(tube.topAmount).toBe(1)
+    })
+
+    it('two levels equal', () => {
+        const tube = new Tube(0, ['wtr2', 'wtr2'])
+        expect(tube.topColor).toBe('wtr2')
+        expect(tube.topAmount).toBe(2)
+    })
 })
 
 /*describe('moving water', () => {
 
 })*/
 
-describe('basic logic', () => {
+describe('test accepts color', () => {
     it ('empty tubes accept anything', () => {
         const tube = new Tube(0)
         expect(tube.accepts('wtr0')).toBeTruthy()

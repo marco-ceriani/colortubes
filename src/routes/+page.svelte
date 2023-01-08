@@ -1,7 +1,9 @@
 <script>
 	import Tubes from '$lib/components/TubesContainer.svelte';
     import Moves from '$lib/components/MovesLog.svelte';
-	import { moveWater, isGameWon, Tube } from '$lib/game/logic.js';
+    import EndModal from '$lib/components/EndModal.svelte';
+	import { isGameWon, Tube } from '$lib/game/tube.js';
+    import { GameState } from '$lib/game/solver.js';
 
 	let won = false;
 
@@ -19,32 +21,33 @@
 		new Tube(9, []),
 		new Tube(10, [])
 	];
-	let tubes = [...intial_tubes];
+
+    let game = new GameState([...intial_tubes]);
 	let moves = [];
 
 	function onMoveWater(event) {
 		const { from, to } = event.detail;
 		try {
-			const res = moveWater(tubes[from], tubes[to]);
-			const newTubes = [...tubes];
-			newTubes[from] = res[0];
-			newTubes[to] = res[1];
-			tubes = newTubes;
-			won = isGameWon(tubes);
-			moves = [...moves, `${tubes[to].topColor} from ${tubes[from].name} to ${tubes[to].name}`];
+            const action = game.getAction(from, to)
+            game = game.applyMove(action)
+			won = isGameWon(game.tubes);
+			moves = [...moves, `${action.color} from ${action.fromId} to ${action.toId}`];
 		} catch (error) {
 			console.log(error.message);
 		}
 	}
 
     function reset() {
-        tubes = [...intial_tubes];
+        game = new GameState([...intial_tubes]);
         moves = [];
     }
 
-	$: console.log(`Won? ${won}`);
+	$: console.log(`Won? ${game.status}`);
 </script>
 
 <button on:click={reset}>Reset</button>
-<Tubes {tubes} on:move={onMoveWater} />
+{#if game.status}
+<EndModal message={game.won ? "You Win!" : "Game Over"}></EndModal>
+{/if}
+<Tubes tubes={game.tubes} on:move={onMoveWater} />
 <Moves moves={moves} />

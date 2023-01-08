@@ -1,17 +1,12 @@
 
-function countTopSibling(tube) {
-    if (tube.length < 2) {
-        return tube.length;
+export function amountMovable(from, to) {
+    if (from.empty) {
+        return 0;
     }
-    const top = tube[tube.length - 1];
-    let num = 1;
-    while (num < tube.length) {
-        if (tube[tube.length - 1 - num] != top) {
-            return num;
-        }
-        num += 1
+    if (to.empty || from.topColor === to.topColor) {
+        return Math.min(from.topAmount, to.emptySpace);
     }
-    return tube.length;
+    return 0;
 }
 
 export function moveWater(from, to) {
@@ -27,7 +22,7 @@ export function moveWater(from, to) {
         throw Error('invalid-color');
     }
 
-    const numBlocks = Math.min(countTopSibling(from.levels), to.emptySpace);
+    const numBlocks = Math.min(from.topAmount, to.emptySpace);
     const first = from.levels.slice(0, -numBlocks);
     const moved = Array(numBlocks).fill(color);
     const second = [...to.levels, ...moved];
@@ -82,7 +77,26 @@ export class Tube {
     }
 
     get topColor() {
-        return this.levels[this.levels.length - 1]
+        if (this.levels.length) {
+            return this.levels[this.levels.length - 1]
+        } else {
+            return null;
+        }
+    }
+
+    get topAmount() {
+        if (this.levels.length <= 1) {
+            return this.levels.length
+        }
+        const top = this.topColor
+        let num = 1;
+        while (num < this.levels.length) {
+            if (this.levels[this.levels.length - 1 - num] != top) {
+                return num;
+            }
+            num += 1
+        }
+        return this.levels.length;
     }
 
     accepts(color) {
