@@ -3,7 +3,7 @@
     import Moves from '$lib/components/MovesLog.svelte';
     import EndModal from '$lib/components/EndModal.svelte';
 	import { isGameWon, Tube } from '$lib/game/tube.js';
-    import { GameState } from '$lib/game/solver.js';
+    import { GameState } from '$lib/game/game.js';
 
 	let won = false;
 

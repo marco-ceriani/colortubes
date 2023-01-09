@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Tube } from './tube';
-import { GameState, get_actions } from './solver';
+import { GameState } from './game';
 
 describe('listing next actions', () => {
     it('any color to empty', () => {
