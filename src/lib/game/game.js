@@ -1,10 +1,10 @@
-import { Tube, moveWater } from './tube';
+import { moveWater } from './tube';
 
-export function get_actions(tubes) {
+function getActions(tubes) {
     let actions = []
     for (let i = 0; i < tubes.length; i++) {
         const source = tubes[i];
-        if (!source.done) {
+        if (!source.done && !source.empty) {
             for (let j = 0; j < tubes.length; j++) {
                 const dest = tubes[j]
                 if (i !== j && dest.accepts(source.topColor)) {
@@ -27,7 +27,6 @@ function isGameWon(tubes) {
 export class GameState {
     constructor(tubes = []) {
         this.tubes = tubes;
-        this.children = []
         if (isGameWon(tubes)) {
             this.status = 'win'
         } else if (this.possibleActions().length === 0) {
@@ -36,7 +35,7 @@ export class GameState {
     }
 
     possibleActions() {
-        return get_actions(this.tubes)
+        return getActions(this.tubes)
     }
 
     get won() {
@@ -51,7 +50,11 @@ export class GameState {
         return this.status !== undefined
     }
 
-    getAction(from, to) {
+    get numClosed() {
+        return this.tubes.filter(tube => tube.done).length
+    }
+
+    historyEntry({ from, to }) {
         if (this.tubes[from].topColor !== this.tubes[to].topColor && !this.tubes[to].empty) {
             throw new Error('invalid-color')
         }
@@ -66,9 +69,7 @@ export class GameState {
         }
     }
 
-    applyMove(data) {
-        const from = data.fromIndex
-        const to = data.toIndex
+    applyMove({from, to}) {
         const [newSourceTube, newDestTube] = moveWater(this.tubes[from], this.tubes[to]);
         const newTubes = [...this.tubes]
         newTubes[from] = newSourceTube

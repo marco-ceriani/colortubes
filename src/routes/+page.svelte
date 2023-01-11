@@ -1,9 +1,12 @@
 <script>
+	import { onMount } from 'svelte';
 	import Tubes from '$lib/components/TubesContainer.svelte';
-    import Moves from '$lib/components/MovesLog.svelte';
-    import EndModal from '$lib/components/EndModal.svelte';
+	import Moves from '$lib/components/MovesLog.svelte';
+	import EndModal from '$lib/components/EndModal.svelte';
 	import { isGameWon, Tube } from '$lib/game/tube.js';
-    import { GameState } from '$lib/game/game.js';
+	import { GameState } from '$lib/game/game.js';
+
+    import Solver from '$lib/solve-worker?worker'
 
 	let won = false;
 
@@ -22,32 +25,64 @@
 		new Tube(10, [])
 	];
 
-    let game = new GameState([...intial_tubes]);
+	let game = new GameState([...intial_tubes]);
 	let moves = [];
+
+	let solverWorker = undefined;
+    let solution = [];
+
+	onMount(async () => {
+		//solverWorker = new Worker(new URL('./solver.js', import.meta.url));
+        solverWorker = new Solver()
+        solverWorker.onmessage = function(evt) {
+            solution = evt.data.actions
+        }
+	});
 
 	function onMoveWater(event) {
 		const { from, to } = event.detail;
 		try {
-            const action = game.getAction(from, to)
-            game = game.applyMove(action)
+			const historyEntry = game.historyEntry({ from, to });
+			game = game.applyMove({ from, to });
 			won = isGameWon(game.tubes);
-			moves = [...moves, `${action.color} from ${action.fromId} to ${action.toId}`];
+			moves = [...moves, historyEntry];
 		} catch (error) {
 			console.log(error.message);
 		}
 	}
 
-    function reset() {
-        game = new GameState([...intial_tubes]);
-        moves = [];
-    }
+	function reset() {
+		game = new GameState([...intial_tubes]);
+		moves = [];
+	}
 
-	$: console.log(`Won? ${game.status}`);
+	function solve() {
+		solverWorker.postMessage(game);
+	}
+
 </script>
 
 <button on:click={reset}>Reset</button>
-{#if game.status}
-<EndModal message={game.won ? "You Win!" : "Game Over"}></EndModal>
+{#if solverWorker}
+	<button on:click={solve}>Solve</button>
 {/if}
+
 <Tubes tubes={game.tubes} on:move={onMoveWater} />
-<Moves moves={moves} />
+<div class="cols-2">
+    <Moves {moves} />
+    {#if solution.length > 0}
+    <Moves title='Solution' moves={solution} />
+    {/if}
+</div>
+
+
+{#if game.status}
+	<EndModal message={game.won ? 'You Win!' : 'Game Over'} />
+{/if}
+
+<style>
+    .cols-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+</style>

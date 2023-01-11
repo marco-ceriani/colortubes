@@ -10,11 +10,14 @@ export function amountMovable(from, to) {
 }
 
 export function moveWater(from, to) {
-    if (from.empty || from.done) {
-        throw Error('source-invalid');
+    if (from.empty) {
+        throw Error(`source-empty ${from.name}`);
+    }
+    if (from.done) {
+        throw Error(`source-closed ${from.name}`);
     }
     if (to.full) {
-        throw Error('target-full');
+        throw Error(`target-full ${from.name}`);
     }
 
     const color = from.topColor;

@@ -1,10 +1,13 @@
 <script>
+    export let title = 'Moves'
     export let moves = [];
 </script>
 
-<h3>Moves</h3>
-<ol>
-	{#each moves as move}
-		<li>{move}</li>
-	{/each}
-</ol>
+<div class="log">
+    <h3>{title}</h3>
+    <ol>
+        {#each moves as move}
+            <li><span style:color="var(--clr-{move.color})">{move.color}</span> from {move.fromId} to {move.toId}</li>
+        {/each}
+    </ol>
+</div>
