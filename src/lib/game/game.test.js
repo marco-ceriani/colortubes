@@ -49,6 +49,19 @@ describe('listing next actions', () => {
         const actions = state.possibleActions()
         expect(actions.length).toBe(0)
     })
+
+    // this is useless, but a similar one is actually good
+    // it('useless moves', () => {
+    //     const state = new GameState([
+    //         new Tube(0, ['wtr0', 'wtr0', 'wtr1', 'wtr2']),
+    //         new Tube(1, ['wtr1', 'wtr2', 'wtr2']),
+    //         new Tube(2, ['wtr0', 'wtr0']),
+    //         new Tube(3, ['wtr1', 'wtr1', 'wtr2'])
+    //     ])
+    //     const actions = state.possibleActions()
+    //     expect(actions).toEqual([])
+    //     expect(actions.length).toBe(0)
+    // })
 })
 
 describe('test won condition', () => {

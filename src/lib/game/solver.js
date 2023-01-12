@@ -11,47 +11,54 @@ export class TreeNode {
         this.parent = parent
         this.children = []
         this.visits = 0
-        this.value = 0
-    }
-
-    backpropagate(value) {
-        this.visits++
-        this.value += value
-        if (this.parent) {
-            this.parent.backpropagate(value)
-        }
+        this.reward = 0
     }
 
     get isTerminalNode() {
         return this.state.ended
     }
 
-    // tune the formula
-    getUpperConfidenceBound() {
-        if (this.visits === 0) return Infinity
-        return (this.wins / this.visits) + Math.sqrt(2 * Math.log(this.parent.visits) / this.visits)
-    }
-
-    getRandomUnvisited() {
-        return this.children[0]
-    }
-
-    get hasChildren() {
-        return this.children.length !== 0
-    }
-
     get fullyExpanded() {
-        return this.children.map(c => c.visits > 0)
-            .reduce((a, b) => a && b, true);
+        return this.unevaluatedActions.length === 0
+    }
+
+    bestChild() {
+        let bestValue = -Infinity
+        let bestChild = null
+        for (const child of this.children) {
+            const uct = child.getUpperConfidenceBound()
+            if (uct > bestValue) {
+                bestChild = child
+                bestValue = uct
+            }
+        }
+        if (!bestChild) {
+            console.error('invalid child')
+        }
+        return bestChild
+    }
+
+    // tune the formula
+    getUpperConfidenceBound(cParam = 1.415) {
+        if (this.visits === 0) return Infinity
+        return (this.reward / this.visits) + Math.sqrt(2 * Math.log(this.parent.visits) / this.visits)
     }
 
     expand() {
         const action = this.unevaluatedActions.pop()
-        console.debug(`apply ${action}`)
+        const actionRecord = this.state.historyEntry(action)
         const nextState = this.state.applyMove(action)
-        const nextNode = new TreeNode(nextState, this, action)
-        self.children.push(nextNode)
+        const nextNode = new TreeNode(nextState, this, actionRecord)
+        this.children.push(nextNode)
         return nextNode
+    }
+
+    backpropagate(value) {
+        this.visits++
+        this.reward += value
+        if (this.parent) {
+            this.parent.backpropagate(value)
+        }
     }
 }
 
@@ -61,36 +68,49 @@ export class TreeNode {
  */
 export function search_mcts(state) {
     const root = new TreeNode(state, null)
-    const iterations = 5
+    const iterations = 1000
+    const maxRollout = 50
     
-    let bestResult = -Infinity
+    let bestResult = undefined
+    let bestReward = -Infinity
     let bestActions = []
 
     for (let i = 0; i < iterations; i++) {
-        const leaf = traverse(root)
-        const [finalState, actions] = rollout(leaf.state)
-        const simulationResult = evaluate(finalState)
-        console.debug(`run result ${simulationResult}`)
-        leaf.backpropagate(simulationResult)
-        if (simulationResult > bestResult) {
+        console.debug(`iteration ${i}`)
+        const [leaf, preActions] = traverse(root)
+        const [finalState, rolloutActions] = rollout(leaf.state, maxRollout)
+        const actions = preActions.concat(rolloutActions)
+        const simulationReward = evaluate(finalState, actions)
+        console.debug(`run result ${simulationReward}`)
+        leaf.backpropagate(simulationReward)
+        if (simulationReward > bestReward) {
             bestActions = actions
-            bestResult = simulationResult
+            bestReward = simulationReward
+            bestResult = finalState.status
         }
     }
 
-    return bestActions
+    console.info(`best result: ${bestReward} - ${bestResult}`)
+    return {
+        result: bestResult,
+        actions: bestActions
+    }
 }
 
 function traverse(root) {
     let current = root
-    // while (!current.terminalNode) {
-    //     if (current.fullyExpanded) {
-    //         current = current.bestChild()
-    //     }
-    //     current = best_uct(current)
-    // }
-    // return current.getRandomUnvisited() || current
-    return root
+    const actions = []
+    while (!current.isTerminalNode) {
+        if (current.fullyExpanded) {
+            current = current.bestChild()
+            actions.push(current.action)
+        } else {
+            current = current.expand()
+            actions.push(current.action)
+            break
+        }
+    }
+    return [current, actions]
 }
 
 function rolloutPolicy(moves) {
@@ -109,13 +129,12 @@ function rollout(game, maxSteps = 20) {
     return [currState, movesSequence]
 }
 
-function evaluate(state) {
+function evaluate(state, actionsList) {
     if (state.won) {
-        return 100
+        return 1
+    } else if (state.lost) {
+        return 0
     }
-    if (state.lost) {
-        return -100
-    }
-    return state.numClosed
+    return (1.0 * state.numClosed / state.tubes.length)
 }
 

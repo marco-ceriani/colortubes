@@ -7,11 +7,8 @@ onmessage = (msg) => {
     const tubes = msg.data.tubes.map(t => new Tube(t.id, t.levels))
     const game = new GameState(tubes)
 
-    const moves = search_mcts(game)
+    const result = search_mcts(game)
 
-    postMessage({
-        result: 'win',
-        actions: moves
-    })
+    postMessage(result)
 }
 
