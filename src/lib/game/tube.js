@@ -37,19 +37,6 @@ export function isGameWon(tubes) {
         .reduce((a, b) => a && b, true);
 }
 
-function ordinal(num) {
-    switch (num) {
-        case 1:
-            return '1st';
-        case 2:
-            return '2nd';
-        case 3:
-            return '3rd';
-        default:
-            return num + 'th';
-    }
-}
-
 export class Tube {
     constructor(id, levels = []) {
         this.id = id
@@ -57,7 +44,7 @@ export class Tube {
     }
 
     get name() {
-        return ordinal(this.id + 1)
+        return String.fromCharCode(65 + this.id)
     }
 
     get empty() {
