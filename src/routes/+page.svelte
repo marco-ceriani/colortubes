@@ -45,6 +45,7 @@
 			const historyEntry = game.historyEntry({ from, to });
 			game = game.applyMove({ from, to });
 			won = isGameWon(game.tubes);
+			console.debug(`applied move ${JSON.stringify(historyEntry)}`)
 			moves = [...moves, historyEntry];
 		} catch (error) {
 			console.log(error.message);
@@ -67,13 +68,13 @@
 	<button on:click={solve}>Solve</button>
 {/if}
 
-<Tubes tubes={game.tubes} on:move={onMoveWater} />
 <div class="cols-2">
+	<Tubes tubes={game.tubes} on:move={onMoveWater} />
     <Moves {moves} />
-    {#if solution.length > 0}
-    <Moves title='Solution' moves={solution} />
-    {/if}
 </div>
+{#if solution.length > 0}
+<Moves title='Solution' moves={solution} />
+{/if}
 
 
 {#if game.status}
@@ -83,6 +84,6 @@
 <style>
     .cols-2 {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr max-content;
     }
 </style>
