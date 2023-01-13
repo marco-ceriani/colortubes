@@ -1,11 +1,12 @@
 <script>
     export let tube;
     export let selected = false;
+    export let selectable;
 </script>
 
 <div class="tube-slot">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="tube" class:selected={selected} class:unplugged={!tube.done} on:click>
+    <div class="tube" class:selected={selected} {selectable} class:unplugged={!tube.done} on:click>
         <div class="plug"></div>
         {#each tube.levels as level}
             <div class="waterblock" style:background-color="var(--clr-{level})"></div>
@@ -25,8 +26,8 @@
         border-radius: 0% 0% 100vw 100vw;
         overflow: hidden;
     }
-    .tube.unplugged:hover {
-        box-shadow: 0px 0px 6px 4px hsl(66.6, 100%, 60%);
+    .tube.unplugged[selectable=true]:hover {
+        box-shadow: 0px 0px 6px 4px hsl(66.6, 100%, 75%);
     }
     .selected {
         transform: translateY(-1.5rem) rotate(-5deg);

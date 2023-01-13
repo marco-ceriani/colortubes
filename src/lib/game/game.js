@@ -76,4 +76,10 @@ export class GameState {
         newTubes[to] = newDestTube
         return new GameState(newTubes);
     }
+
+    add(color, to) {
+        const newTubes = [...this.tubes]
+        newTubes[to] = this.tubes[to].add(color)
+        return new GameState(newTubes);
+    }
 }

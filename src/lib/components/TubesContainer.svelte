@@ -5,21 +5,32 @@
 	const dispatch = createEventDispatcher();
 
 	export let tubes;
-	let selected = null;
+    export let selectable = '';
+	export let selected = null;
+
+    function isSelectable(id, current) {
+        if (current === id) {
+            return false
+        }
+        if (tubes[id].done) {
+            return false
+        }
+        if (selectable === 'non-empty' && tubes[id].empty) {
+            return false
+        }
+        if (selectable === 'non-full' && tubes[id].full) {
+            return false
+        }
+        return true
+    }
 
 	function selectTube(id) {
-        if (!tubes[id].done) {
-            if (selected === null) {
-                selected = id;
-            } else if (selected !== id && !tubes[id].done) {
-                dispatch('move', {
-                    from: selected,
-                    to: id
-                });
-                selected = null;
-            } else {
-                selected = null;
-            }
+        if (isSelectable(id, selected)) {
+                // dispatch('move', {
+                //     from: selected,
+                //     to: id
+                // });
+            dispatch('select', id)
         }
 	}
 </script>
@@ -29,6 +40,7 @@
 		<Tube
             tube={tube}
 			selected={selected === tube.id}
+            selectable={isSelectable(tube.id, selected)}
 			on:click={() => selectTube(tube.id)}
 		/>
 	{/each}

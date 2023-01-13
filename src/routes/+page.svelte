@@ -3,12 +3,11 @@
 	import Tubes from '$lib/components/TubesContainer.svelte';
 	import Moves from '$lib/components/MovesLog.svelte';
 	import EndModal from '$lib/components/EndModal.svelte';
-	import { isGameWon, Tube } from '$lib/game/tube.js';
+    import ColorPicker from '$lib/components/ColorPicker.svelte';
+	import { Tube } from '$lib/game/tube.js';
 	import { GameState } from '$lib/game/game.js';
 
     import Solver from '$lib/solve-worker?worker'
-
-	let won = false;
 
 	let intial_tubes = [
 		new Tube(0, ['wtr0', 'wtr8', 'wtr5', 'wtr2']),
@@ -25,8 +24,13 @@
 		new Tube(10, [])
 	];
 
+    let mode = 'play';
 	let game = new GameState([...intial_tubes]);
+    let selected = null;
+    let selectable;
 	let moves = [];
+
+    let fillColor = null;
 
 	let solverWorker = undefined;
     let solution = [];
@@ -39,21 +43,31 @@
         }
 	});
 
-	function onMoveWater(event) {
-		const { from, to } = event.detail;
-		try {
-			const historyEntry = game.historyEntry({ from, to });
-			game = game.applyMove({ from, to });
-			won = isGameWon(game.tubes);
-			console.debug(`applied move ${JSON.stringify(historyEntry)}`)
-			moves = [...moves, historyEntry];
-		} catch (error) {
-			console.log(error.message);
-		}
-	}
+    $: selectable = mode === 'play' ? (selected ? 'non-full' : 'non-empty') : 'non-full';
+
+    function editMode() {
+        if (mode !== 'edit') {
+            mode = 'edit'
+            intial_tubes = Array(12).fill().map((_, i) => new Tube(i, []));
+            game = new GameState(intial_tubes)
+            selected = null
+            fillColor = null
+        }
+    }
+
+    function playMode() {
+        if (mode !== 'play') {
+            mode = 'play'
+            intial_tubes = game.tubes
+            selected = null
+            moves = []
+            solution = []
+        }
+    }
 
 	function reset() {
 		game = new GameState([...intial_tubes]);
+        selected = null;
 		moves = [];
 	}
 
@@ -61,15 +75,68 @@
 		solverWorker.postMessage(game);
 	}
 
+    function selectTube(evt) {
+        if (mode === 'play') {
+            playTubeSelection(evt)
+        } else {
+            playEditSelection(evt)
+        }
+    }
+
+    function playTubeSelection(evt) {
+        console.log(`selecting ${evt.detail}, current: ${selected}`)
+        if (selected === null) {
+            selected = evt.detail
+        } else {
+            moveWater(selected, evt.detail)
+            selected = null;
+        }
+    }
+
+	function moveWater(from, to) {
+		try {
+			const historyEntry = game.historyEntry({ from, to });
+			game = game.applyMove({ from, to });
+			console.debug(`applied move ${JSON.stringify(historyEntry)}`)
+			moves = [...moves, historyEntry];
+		} catch (error) {
+			console.log(error.message);
+		}
+	}
+
+    function pickColor(evt) {
+        fillColor = evt.detail;
+    }
+    function playEditSelection(evt) {
+        const id = evt.detail
+        console.log(`filling ${id} with ${fillColor}`)
+        if (fillColor !== null) {
+            game = game.add(fillColor, id)
+        }
+    }
+
 </script>
 
-<button on:click={reset}>Reset</button>
-{#if solverWorker}
-	<button on:click={solve}>Solve</button>
+<div class="buttons">
+    <button on:click={reset}>Reset</button>
+    {#if solverWorker}
+        <button on:click={solve}>Solve</button>
+    {/if}
+    {#if mode === 'play'}
+        <button on:click={editMode}>Edit</button>
+    {:else}
+        <button on:click={playMode}>Play</button>
+    {/if}
+</div>
+
+{#if mode === 'edit'}
+<div class="edit-panel">
+    <ColorPicker numColors={12} on:color-pick={pickColor} />
+</div>
 {/if}
 
 <div class="cols-2">
-	<Tubes tubes={game.tubes} on:move={onMoveWater} />
+	<Tubes tubes={game.tubes} {selected} {selectable} on:select={selectTube} />
     <Moves {moves} />
 </div>
 {#if solution.length > 0}
@@ -77,7 +144,7 @@
 {/if}
 
 
-{#if game.status}
+{#if mode === 'play' && game.status}
 	<EndModal message={game.won ? 'You Win!' : 'Game Over'} />
 {/if}
 
@@ -85,5 +152,8 @@
     .cols-2 {
         display: grid;
         grid-template-columns: 1fr max-content;
+    }
+    .edit-panel {
+        margin-block: 1rem;
     }
 </style>

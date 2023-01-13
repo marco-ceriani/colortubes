@@ -102,5 +102,11 @@ export class Tube {
             return 0;
         }
     }
+
+    add(color) {
+        if (!this.full) {
+            return new Tube(this.id, [...this.levels, color])
+        }
+    }
 }
 

@@ -10,6 +10,11 @@
 </div>
 
 <style>
+    header {
+        text-align: center;
+        font-size: 1.25rem;
+        margin-block: .75rem;
+    }
     .root-container {
         max-width: 50rem;
         height: 100%;
