@@ -3,10 +3,12 @@
     const dispatch = createEventDispatcher();
 
     export let numColors = 9
-
+    
     const colors = Array(numColors).fill().map((_, i) => "wtr"+i)
+    let selected = null
 
     function selectColor(color) {
+        selected = color
         dispatch('color-pick', color)
     }
 </script>
@@ -14,7 +16,8 @@
 
 <div class="palette">
     {#each colors as color}
-        <button on:click={() => selectColor(color)} class="cell" style:--color="var(--clr-{color})"></button>
+        <button on:click={() => selectColor(color)}
+            class="cell" class:curr={color === selected} style:--color="var(--clr-{color})"></button>
     {/each}
 </div>
 
@@ -29,5 +32,9 @@
         border:1px solid white;
         display: inline-block;
         background-color: var(--color);
+    }
+    .curr {
+        outline: black solid .125rem;
+        outline-offset: -.25rem;
     }
 </style>

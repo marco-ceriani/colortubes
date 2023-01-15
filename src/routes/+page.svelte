@@ -3,7 +3,6 @@
 	import Tubes from '$lib/components/TubesContainer.svelte';
 	import Moves from '$lib/components/MovesLog.svelte';
 	import EndModal from '$lib/components/EndModal.svelte';
-    import ColorPicker from '$lib/components/ColorPicker.svelte';
 	import { Tube } from '$lib/game/tube.js';
 	import { GameState } from '$lib/game/game.js';
 
@@ -24,7 +23,6 @@
 		new Tube(10, [])
 	];
 
-    let mode = 'play';
 	let game = new GameState([...intial_tubes]);
     let selected = null;
     let selectable;
@@ -43,27 +41,7 @@
         }
 	});
 
-    $: selectable = mode === 'play' ? (selected ? 'non-full' : 'non-empty') : 'non-full';
-
-    function editMode() {
-        if (mode !== 'edit') {
-            mode = 'edit'
-            intial_tubes = Array(12).fill().map((_, i) => new Tube(i, []));
-            game = new GameState(intial_tubes)
-            selected = null
-            fillColor = null
-        }
-    }
-
-    function playMode() {
-        if (mode !== 'play') {
-            mode = 'play'
-            intial_tubes = game.tubes
-            selected = null
-            moves = []
-            solution = []
-        }
-    }
+    $: selectable = selected ? 'non-full' : 'non-empty';
 
 	function reset() {
 		game = new GameState([...intial_tubes]);
@@ -76,14 +54,6 @@
 	}
 
     function selectTube(evt) {
-        if (mode === 'play') {
-            playTubeSelection(evt)
-        } else {
-            playEditSelection(evt)
-        }
-    }
-
-    function playTubeSelection(evt) {
         console.log(`selecting ${evt.detail}, current: ${selected}`)
         if (selected === null) {
             selected = evt.detail
@@ -104,17 +74,6 @@
 		}
 	}
 
-    function pickColor(evt) {
-        fillColor = evt.detail;
-    }
-    function playEditSelection(evt) {
-        const id = evt.detail
-        console.log(`filling ${id} with ${fillColor}`)
-        if (fillColor !== null) {
-            game = game.add(fillColor, id)
-        }
-    }
-
 </script>
 
 <div class="buttons">
@@ -122,18 +81,8 @@
     {#if solverWorker}
         <button on:click={solve}>Solve</button>
     {/if}
-    {#if mode === 'play'}
-        <button on:click={editMode}>Edit</button>
-    {:else}
-        <button on:click={playMode}>Play</button>
-    {/if}
+    <a href="/edit">Custom</a>
 </div>
-
-{#if mode === 'edit'}
-<div class="edit-panel">
-    <ColorPicker numColors={12} on:color-pick={pickColor} />
-</div>
-{/if}
 
 <div class="cols-2">
 	<Tubes tubes={game.tubes} {selected} {selectable} on:select={selectTube} />
@@ -144,7 +93,7 @@
 {/if}
 
 
-{#if mode === 'play' && game.status}
+{#if game.status}
 	<EndModal message={game.won ? 'You Win!' : 'Game Over'} />
 {/if}
 
@@ -152,8 +101,5 @@
     .cols-2 {
         display: grid;
         grid-template-columns: 1fr max-content;
-    }
-    .edit-panel {
-        margin-block: 1rem;
     }
 </style>

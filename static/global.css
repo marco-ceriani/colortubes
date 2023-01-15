@@ -92,6 +92,7 @@ h6 {
     --clr-wtr11: hsl(0, 0%, 30%);
     --clr-none: transparent;
     --clr-dark: hsl(336264, 12%, 8%);
+    --clr-accent: hsl(42, 84.6%, 66.9%);
 }
 
 body {
