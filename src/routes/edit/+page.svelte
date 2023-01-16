@@ -4,6 +4,8 @@
 	import Button from '$lib/components/Button.svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
 
+    import { currentGame } from '$lib/game/game.js';
+
 	let tubes = newTubes(10);
 	let currentColor = null;
 	let colorCounts = {};
@@ -38,7 +40,7 @@
 
 	function applyColor(tubeId, level) {
 		if (currentColor && canUseColor(currentColor)) {
-			console.log(`click ${tubeId} - ${level}`);
+			console.debug(`apply color ${currentColor} to tube ${tubeId} level ${level}`);
 			const newLevels = [...tubes[tubeId]];
 			newLevels[level] = currentColor;
 			const newTubes = [...tubes];
@@ -51,7 +53,19 @@
 		tubes = newTubes(10);
 	}
 
+    function removeEmpty(tubes) {
+        return tubes.map(tube => {
+            const firstEmpty = tube.indexOf('')
+            if (firstEmpty >= 0) {
+                return tube.slice(0, firstEmpty)
+            } else {
+                return tube
+            }
+        })
+    }
+
 	function doPlay() {
+        currentGame.set(removeEmpty(tubes));
 		goto('/');
 	}
 
@@ -74,8 +88,6 @@
 	$: playable =
 		Object.keys(colorCounts) === tubes.length &&
 		Object.values(colorCounts).reduce((a, b) => a + b, 0) === 4 * (tubes.length - 2);
-	$: console.log(playable);
-    $: console.log(colorCounts);
 </script>
 
 <h2>Edit Puzzle</h2>
@@ -97,7 +109,7 @@
     <span>Enough colors: {numColorsMaxed}</span>
 </div>
 
-<ColorPicker numColors={12} on:color-pick={pickColor} counts={colorCounts} />
+<ColorPicker on:color-pick={pickColor} counts={colorCounts} />
 
 <div class="tubes-container">
 	{#each tubes as tube, tid}

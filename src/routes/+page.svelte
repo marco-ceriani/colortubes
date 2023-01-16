@@ -5,31 +5,14 @@
 	import Moves from '$lib/components/MovesLog.svelte';
 	import EndModal from '$lib/components/EndModal.svelte';
 	import { Tube } from '$lib/game/tube.js';
-	import { GameState } from '$lib/game/game.js';
+	import { GameState, currentGame } from '$lib/game/game.js';
 
     import Solver from '$lib/solve-worker?worker'
 
-	let intial_tubes = [
-		new Tube(0, ['wtr0', 'wtr8', 'wtr5', 'wtr2']),
-		new Tube(1, ['wtr1', 'wtr3', 'wtr3', 'wtr3']),
-		new Tube(2, ['wtr6', 'wtr5', 'wtr8', 'wtr5']),
-		new Tube(3, ['wtr7', 'wtr6', 'wtr2', 'wtr0']),
-		new Tube(4, ['wtr0', 'wtr6', 'wtr8', 'wtr7']),
-		new Tube(5, ['wtr7', 'wtr6', 'wtr4', 'wtr3']),
-
-		new Tube(6, ['wtr2', 'wtr1', 'wtr8', 'wtr5']),
-		new Tube(7, ['wtr1', 'wtr4', 'wtr0', 'wtr4']),
-		new Tube(8, ['wtr1', 'wtr7', 'wtr2', 'wtr4']),
-		new Tube(9, []),
-		new Tube(10, [])
-	];
-
-	let game = new GameState([...intial_tubes]);
+	let game = new GameState($currentGame);
     let selected = null;
     let selectable;
 	let moves = [];
-
-    let fillColor = null;
 
 	let solverWorker = undefined;
     let solution = [];
@@ -45,7 +28,7 @@
     $: selectable = selected ? 'non-full' : 'non-empty';
 
 	function reset() {
-		game = new GameState([...intial_tubes]);
+		game = new GameState($currentGame);
         selected = null;
 		moves = [];
 	}
@@ -55,9 +38,9 @@
 	}
 
     function selectTube(evt) {
-        console.log(`selecting ${evt.detail}, current: ${selected}`)
         if (selected === null) {
             selected = evt.detail
+            console.debug(`selecting ${selected}`)
         } else {
             moveWater(selected, evt.detail)
             selected = null;

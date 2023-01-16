@@ -1,4 +1,5 @@
-import { moveWater } from './tube';
+import { moveWater, Tube } from './tube';
+import { writable } from 'svelte/store';
 
 function getActions(tubes) {
     let actions = []
@@ -26,8 +27,15 @@ function isGameWon(tubes) {
 
 export class GameState {
     constructor(tubes = []) {
-        this.tubes = tubes;
-        if (isGameWon(tubes)) {
+        this.tubes = []
+        for (const [i, t] of tubes.entries()) {
+            if (t instanceof Tube) {
+                this.tubes.push(t)
+            } else {
+                this.tubes.push(new Tube(i, t))
+            }
+        }
+        if (isGameWon(this.tubes)) {
             this.status = 'win'
         } else if (this.possibleActions().length === 0) {
             this.status = 'lose'
@@ -83,3 +91,18 @@ export class GameState {
         return new GameState(newTubes);
     }
 }
+
+export const currentGame = writable([
+    ['wtr0', 'wtr8', 'wtr5', 'wtr2'],
+    ['wtr1', 'wtr3', 'wtr3', 'wtr3'],
+    ['wtr6', 'wtr5', 'wtr8', 'wtr5'],
+    ['wtr7', 'wtr6', 'wtr2', 'wtr0'],
+    ['wtr0', 'wtr6', 'wtr8', 'wtr7'],
+    ['wtr7', 'wtr6', 'wtr4', 'wtr3'],
+
+    ['wtr2', 'wtr1', 'wtr8', 'wtr5'],
+    ['wtr1', 'wtr4', 'wtr0', 'wtr4'],
+    ['wtr1', 'wtr7', 'wtr2', 'wtr4'],
+    [],
+    []
+])

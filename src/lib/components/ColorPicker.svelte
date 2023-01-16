@@ -2,7 +2,7 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    export let numColors = 9
+    export let numColors = 15
     export let counts = {}
     
     const colors = Array(numColors).fill().map((_, i) => "wtr"+i)
