@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+    import Button from '$lib/components/Button.svelte';
 	import Tubes from '$lib/components/TubesContainer.svelte';
 	import Moves from '$lib/components/MovesLog.svelte';
 	import EndModal from '$lib/components/EndModal.svelte';
@@ -77,11 +78,11 @@
 </script>
 
 <div class="buttons">
-    <button on:click={reset}>Reset</button>
+    <Button on:click={reset}>Reset</Button>
     {#if solverWorker}
-        <button on:click={solve}>Solve</button>
+        <Button on:click={solve}>Solve</Button>
     {/if}
-    <a href="/edit">Custom</a>
+    <Button href="/edit">Custom</Button>
 </div>
 
 <div class="cols-2">

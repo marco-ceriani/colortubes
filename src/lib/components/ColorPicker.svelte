@@ -3,6 +3,7 @@
     const dispatch = createEventDispatcher();
 
     export let numColors = 9
+    export let counts = {}
     
     const colors = Array(numColors).fill().map((_, i) => "wtr"+i)
     let selected = null
@@ -17,7 +18,9 @@
 <div class="palette">
     {#each colors as color}
         <button on:click={() => selectColor(color)}
-            class="cell" class:curr={color === selected} style:--color="var(--clr-{color})"></button>
+            class="cell" class:curr={color === selected} style:--color="var(--clr-{color})">
+            {counts[color] || ''}
+        </button>
     {/each}
 </div>
 
