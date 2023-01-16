@@ -49,7 +49,8 @@
 <style>
 	.tubes-container {
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+		grid-template-rows: repeat(2, auto);
+        grid-auto-flow: column;
 		margin-block: 3rem;
 		row-gap: 3rem;
 	}

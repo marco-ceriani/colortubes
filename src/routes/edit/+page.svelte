@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	import Button from '$lib/components/Button.svelte';
+    import ButtonsBar from '$lib/components/ButtonsBar.svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
 
     import { currentGame } from '$lib/game/game.js';
@@ -91,11 +92,11 @@
 </script>
 
 <h2>Edit Puzzle</h2>
-<div class="navbar">
+<ButtonsBar>
 	<Button on:click={reset}>Reset</Button>
 	<Button href="/">Discard</Button>
 	<Button on:click={doPlay}>Play</Button>
-</div>
+</ButtonsBar>
 <div>
 	<label for="num_tubes">Num. Tubes</label>
 	<input
@@ -130,14 +131,10 @@
 	input[type='number'] {
 		max-width: 6ch;
 	}
-	.navbar {
-		margin-block-end: 1rem;
-		display: flex;
-		gap: 0.75rem;
-	}
 	.tubes-container {
-		display: flex;
-		flex-flow: row wrap;
+        display: grid;
+		grid-template-rows: repeat(2, auto);
+        grid-auto-flow: column;
 		gap: 1rem;
 		margin-block: 1rem;
 	}
@@ -150,11 +147,5 @@
 
 	.block {
 		height: 3rem;
-	}
-	.square {
-		display: inline-block;
-		height: 1em;
-		width: 2ch;
-		margin-inline-end: 1ch;
 	}
 </style>

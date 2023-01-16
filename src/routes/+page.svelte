@@ -1,10 +1,10 @@
 <script>
 	import { onMount } from 'svelte';
     import Button from '$lib/components/Button.svelte';
+    import ButtonsBar from '$lib/components/ButtonsBar.svelte';
 	import Tubes from '$lib/components/TubesContainer.svelte';
 	import Moves from '$lib/components/MovesLog.svelte';
 	import EndModal from '$lib/components/EndModal.svelte';
-	import { Tube } from '$lib/game/tube.js';
 	import { GameState, currentGame } from '$lib/game/game.js';
 
     import Solver from '$lib/solve-worker?worker'
@@ -60,13 +60,13 @@
 
 </script>
 
-<div class="buttons">
+<ButtonsBar>
     <Button on:click={reset}>Reset</Button>
     {#if solverWorker}
         <Button on:click={solve}>Solve</Button>
     {/if}
     <Button href="/edit">Custom</Button>
-</div>
+</ButtonsBar>
 
 <div class="cols-2">
 	<Tubes tubes={game.tubes} {selected} {selectable} on:select={selectTube} />

@@ -1,8 +1,9 @@
 <script>
+    import {fade} from 'svelte/transition'
     export let message
 </script>
 
-<div class="modal">
+<div class="modal" transition:fade={{delay: 100}}>
     <h2>{message}</h2>
 </div>
 
