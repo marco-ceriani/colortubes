@@ -91,20 +91,13 @@ export class GameState {
         return new GameState(newTubes);
     }
 
-    // async getHash() {
-    //     const nums = []
-    //     for (const tube of this.tubes) {
-    //         nums.push(...tube.levels.map(v => Number(v.slice(3))))
-    //         if (!tube.full) {
-    //             nums.push(-1)
-    //         }
-    //     }
-    //     const bytes = new Uint8Array(nums)
-    //     const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
-    //     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    //     const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-    //     return hashHex
-    // }
+    getHash() {
+        return this.tubes.map(t => { 
+            return t.levels.concat(t.full ? [] : [0])
+        }).flat()
+        .map(n => n.toString(36))
+        .join('')
+    }
 }
 
 export const currentGame = writable([
