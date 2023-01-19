@@ -5,7 +5,7 @@
     export let numColors = 15
     export let counts = {}
     
-    const colors = Array(numColors).fill().map((_, i) => "wtr"+i)
+    const colors = Array(numColors).fill().map((_, i) => i + 1)
     let selected = null
 
     function selectColor(color) {
@@ -18,7 +18,7 @@
 <div class="palette">
     {#each colors as color}
         <button on:click={() => selectColor(color)}
-            class="cell" class:curr={color === selected} style:--color="var(--clr-{color})">
+            class="cell" class:curr={color === selected} style:--color="var(--clr-wtr{color})">
             {counts[color] || ''}
         </button>
     {/each}

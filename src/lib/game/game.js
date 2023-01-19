@@ -90,19 +90,35 @@ export class GameState {
         newTubes[to] = this.tubes[to].add(color)
         return new GameState(newTubes);
     }
+
+    // async getHash() {
+    //     const nums = []
+    //     for (const tube of this.tubes) {
+    //         nums.push(...tube.levels.map(v => Number(v.slice(3))))
+    //         if (!tube.full) {
+    //             nums.push(-1)
+    //         }
+    //     }
+    //     const bytes = new Uint8Array(nums)
+    //     const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
+    //     const hashArray = Array.from(new Uint8Array(hashBuffer));
+    //     const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    //     return hashHex
+    // }
 }
 
 export const currentGame = writable([
-    ['wtr0', 'wtr8', 'wtr5', 'wtr2'],
-    ['wtr1', 'wtr3', 'wtr3', 'wtr3'],
-    ['wtr6', 'wtr5', 'wtr8', 'wtr5'],
-    ['wtr7', 'wtr6', 'wtr2', 'wtr0'],
-    ['wtr0', 'wtr6', 'wtr8', 'wtr7'],
-    ['wtr7', 'wtr6', 'wtr4', 'wtr3'],
+    [9, 8, 5, 2],
+    [1, 3, 3, 3],
+    [6, 5, 8, 5],
+    [7, 6, 2, 9],
+    [9, 6, 8, 7],
+    [7, 6, 4, 3],
 
-    ['wtr2', 'wtr1', 'wtr8', 'wtr5'],
-    ['wtr1', 'wtr4', 'wtr0', 'wtr4'],
-    ['wtr1', 'wtr7', 'wtr2', 'wtr4'],
+    [2, 1, 8, 5],
+    [1, 4, 9, 4],
+    [1, 7, 2, 4],
     [],
     []
 ])
+

@@ -78,11 +78,10 @@ h6 {
 /* Global theme */
 
 :root {
-    --clr-wtr0: hsl(19.3, 56.1%, 40.2%);
-    --clr-wtr1: hsl(0, 75%, 55%);
-    --clr-wtr2: hsl(38.8, 77.7%, 50%);
-    --clr-wtr3: hsl(61, 77.7%, 50%);
-    --clr-wtr4: hsl(315.8, 77.7%, 80.6%);
+    --clr-wtr1: hsl(19.3, 56.1%, 40.2%);
+    --clr-wtr2: hsl(0, 75%, 55%);
+    --clr-wtr3: hsl(38.8, 77.7%, 50%);
+    --clr-wtr4: hsl(61, 77.7%, 50%);
     --clr-wtr5: hsl(120, 50%, 26%);
     --clr-wtr6: hsl(120, 55%, 46%);
     --clr-wtr7: hsl(120, 60%, 66.7%);
@@ -91,8 +90,9 @@ h6 {
     --clr-wtr10: hsl(180, 77.7%, 50%);
     --clr-wtr11: hsl(262.7, 77.7%, 63.7%);
     --clr-wtr12: hsl(304, 60%, 55%);
-    --clr-wtr13: hsl(0, 0%, 70%);
+    --clr-wtr13: hsl(315.8, 77.7%, 80.6%);
     --clr-wtr14: hsl(0, 0%, 30%);
+    --clr-wtr15: hsl(0, 0%, 70%);
     --clr-none: transparent;
     --clr-dark: hsl(336264, 12%, 8%);
     --clr-accent: hsl(42, 84.6%, 66.9%);

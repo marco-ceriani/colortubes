@@ -8,7 +8,7 @@
     <ol>
         {#each moves as move}
             <li>
-                <span class="amount" style:background-color="var(--clr-{move.color})">{move.amount}</span> from {move.fromId} to {move.toId}</li>
+                <span class="amount" style:background-color="var(--clr-wtr{move.color})">{move.amount}</span> from {move.fromId} to {move.toId}</li>
         {/each}
     </ol>
 </div>

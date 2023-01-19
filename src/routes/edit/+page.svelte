@@ -120,7 +120,7 @@
 				<div
 					class="block"
 					on:click={() => applyColor(tid, lvl)}
-					style:background-color="var(--clr-{clr})"
+					style:background-color="var(--clr-wtr{clr})"
 				/>
 			{/each}
 		</div>

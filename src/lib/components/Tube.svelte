@@ -11,7 +11,7 @@
     <div class="tube" class:selected={selected} {selectable} class:unplugged={!tube.done} on:click>
         <div class="plug"></div>
         {#each tube.levels as level}
-            <div class="waterblock" style:background-color="var(--clr-{level})" transition:fly={{y: -200, duration: 200, easing: linear}}></div>
+            <div class="waterblock" style:background-color="var(--clr-wtr{level})" transition:fly={{y: -200, duration: 200, easing: linear}}></div>
         {/each}
     </div>
     <h4>{tube.name}</h4>
