@@ -8,17 +8,17 @@
 	import { GameState, currentGame } from '$lib/game/game.js';
 
     import Solver from '$lib/solve-worker?worker'
+	let solverWorker = undefined;
 
 	let game = new GameState($currentGame);
     let selected = null;
     let selectable;
 	let moves = [];
-
-	let solverWorker = undefined;
+    
     let solution = [];
+    let highlight = null;
 
 	onMount(async () => {
-		//solverWorker = new Worker(new URL('./solver.js', import.meta.url));
         solverWorker = new Solver()
         solverWorker.onmessage = function(evt) {
             solution = evt.data.actions
@@ -31,6 +31,7 @@
 		game = new GameState($currentGame);
         selected = null;
 		moves = [];
+        highlight = null;
 	}
 
 	function solve() {
@@ -38,12 +39,22 @@
 	}
 
     function selectTube(evt) {
+        const newIndex = evt.detail
         if (selected === null) {
-            selected = evt.detail
+            selected = newIndex
             console.debug(`selecting ${selected}`)
         } else {
-            moveWater(selected, evt.detail)
+            moveWater(selected, newIndex)
+            if (solution.length > 0) {
+                const suggestion = solution[0]
+                if (newIndex === suggestion.toIndex && selected === suggestion.fromIndex) {
+                    solution = solution.slice(1)
+                } else {
+                    solution = []
+                }
+            }
             selected = null;
+            highlight = null;
         }
     }
 
@@ -58,23 +69,30 @@
 		}
 	}
 
+    function hint() {
+        if (solution.length > 0) {
+            selected = solution[0].fromIndex
+            highlight = solution[0].toIndex
+        }
+    }
+
 </script>
 
 <ButtonsBar>
+    <Button href="/edit">Custom</Button>
     <Button on:click={reset}>Reset</Button>
-    {#if solverWorker}
+    {#if solverWorker && solution.length == 0}
         <Button on:click={solve}>Solve</Button>
     {/if}
-    <Button href="/edit">Custom</Button>
+    {#if solution.length > 0} 
+        <Button on:click={hint}>💡</Button>
+    {/if}
 </ButtonsBar>
 
 <div class="cols-2">
-	<Tubes tubes={game.tubes} {selected} {selectable} on:select={selectTube} />
+	<Tubes tubes={game.tubes} {selected} {selectable} {highlight} on:select={selectTube} />
     <Moves {moves} />
 </div>
-{#if solution.length > 0}
-<Moves title='Solution' moves={solution} />
-{/if}
 
 
 {#if game.status}

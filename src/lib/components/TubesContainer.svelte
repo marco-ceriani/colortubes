@@ -7,6 +7,7 @@
 	export let tubes;
     export let selectable = '';
 	export let selected = null;
+    export let highlight = null;
 
     function isSelectable(id, current) {
         if (current === id) {
@@ -41,6 +42,7 @@
             tube={tube}
 			selected={selected === tube.id}
             selectable={isSelectable(tube.id, selected)}
+            highlight = {highlight === tube.id}
 			on:click={() => selectTube(tube.id)}
 		/>
 	{/each}
