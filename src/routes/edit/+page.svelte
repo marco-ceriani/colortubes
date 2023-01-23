@@ -14,7 +14,6 @@
 	let currentColor = null;
 	let colorCounts = {};
 
-	let numColorsMaxed = false;
 	let playable = false;
 
 	/* Tubes */
@@ -59,11 +58,6 @@
 		currentColor = evt.detail;
 	}
 
-	function canUseColor(color) {
-		//return colorCounts[currentColor] != 4 && (!numColorsMaxed || color in colorCounts);
-        return true;
-	}
-
     function toFullTube(values) {
         if (values.length < 4) {
             return values.concat(new Array(4 - values.length).fill(''))
@@ -72,20 +66,13 @@
     }
 
 	function applyColor(tubeId, level) {
-		if (canUseColor(currentColor)) {
-			console.debug(`apply color ${currentColor} to tube ${tubeId} level ${level}`);
-            const currTube = tubes[tubeId];
-			const newLevels = toFullTube([...currTube.levels]);
-			newLevels[level] = currentColor || '';
-			const newTubes = [...tubes];
-			newTubes[tubeId] = new Tube(currTube.id, newLevels);
-			tubes = newTubes;
-		}
-	}
-
-	function doPlay() {
-		currentGame.set(removeEmpty(tubes));
-		goto('/');
+        console.debug(`apply color ${currentColor} to tube ${tubeId} level ${level}`);
+        const currTube = tubes[tubeId];
+        const newLevels = toFullTube([...currTube.levels]);
+        newLevels[level] = currentColor || '';
+        const newTubes = [...tubes];
+        newTubes[tubeId] = new Tube(currTube.id, newLevels);
+        tubes = newTubes;
 	}
 
 	function count() {
@@ -100,20 +87,29 @@
 		return byColor;
 	}
 
+    function isPlayable(counts) {
+        const distinctCounts = new Set(Object.values(colorCounts))
+        return distinctCounts.size === 1 && distinctCounts.has(4)
+    }
+
+	function doPlay() {
+        if (playable) {
+            currentGame.set(removeEmpty(tubes));
+            goto('/');
+        }
+	}
+
 	$: colorCounts = count(tubes);
 
-	$: numColorsMaxed = Object.keys(colorCounts).length >= tubes.length - 2;
+    $: playable = isPlayable(colorCounts)
 
-	$: playable =
-		Object.keys(colorCounts) === tubes.length &&
-		Object.values(colorCounts).reduce((a, b) => a + b, 0) === 4 * (tubes.length - 2);
 </script>
 
 <h2>Edit Puzzle</h2>
 <ButtonsBar>
 	<Button on:click={reset}>Reset</Button>
 	<Button href="/">Discard</Button>
-	<Button on:click={doPlay}>Play</Button>
+	<Button on:click={doPlay} disabled={!playable}>Play</Button>
 </ButtonsBar>
 <div>
 	<label for="num_tubes">Num. Tubes</label>
@@ -125,7 +121,6 @@
 		value={tubes.length}
 		on:change={resizeTubes}
 	/>
-	<span>Enough colors: {numColorsMaxed}</span>
 </div>
 
 <ColorPicker on:color-pick={pickColor} counts={colorCounts} />
