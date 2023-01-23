@@ -49,20 +49,7 @@
 	}
 </script>
 
-<!--
 <div class="tubes-container">
-	{#each tubes as tube}
-		<Tube
-			{tube}
-			selected={selected === tube.id}
-			selectable={isSelectable(tube.id, selected)}
-			highlight={highlight === tube.id}
-			on:click={() => selectTube(tube.id)}
-		/>
-	{/each}
-</div>
--->
-<div class="tubes-container2">
 	{#each rows as row}
 		<div class="tubes-row">
 			{#each row as tube}
@@ -79,13 +66,6 @@
 </div>
 
 <style>
-	.tubes-container {
-		display: grid;
-		grid-template-rows: repeat(2, auto);
-		grid-auto-flow: column;
-		margin-block: 3rem;
-		row-gap: 3rem;
-	}
     .tubes-row {
         display: flex;
         justify-content: space-around;

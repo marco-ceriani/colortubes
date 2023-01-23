@@ -113,5 +113,5 @@ export const currentGame = writable([
     [1, 7, 2, 4],
     [],
     []
-])
+].map((water, i) => new Tube(i, water)))
 

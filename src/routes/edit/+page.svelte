@@ -2,26 +2,29 @@
 	import { goto } from '$app/navigation';
 
 	import Button from '$lib/components/Button.svelte';
-    import ButtonsBar from '$lib/components/ButtonsBar.svelte';
+	import ButtonsBar from '$lib/components/ButtonsBar.svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
 
+	import { Tube } from '$lib/game/tube.js';
     import { currentGame } from '$lib/game/game.js';
-
-	let tubes = newTubes(10);
+	import { distributeOnRows } from '$lib/components/tubesLayout.js';
+	
+	let tubes = $currentGame;
+	let tubeRows = [tubes];
 	let currentColor = null;
 	let colorCounts = {};
 
-    let numColorsMaxed = false;
+	let numColorsMaxed = false;
 	let playable = false;
 
-	function newTubes(size) {
+	/* Tubes */
+
+	$: tubeRows = distributeOnRows(tubes);
+
+	function newTubes(size, start = 0) {
 		return Array(size)
 			.fill()
-			.map((_, i) => ['', '', '', '']);
-	}
-
-	function pickColor(evt) {
-		currentColor = evt.detail;
+			.map((_, i) => ({ id: start + i, levels: ['', '', '', ''] }));
 	}
 
 	function resizeTubes(evt) {
@@ -31,22 +34,7 @@
 		}
 		if (newSize > tubes.length) {
 			const inc = newSize - tubes.length;
-			tubes = [...tubes, ...newTubes(inc)];
-		}
-	}
-
-    function canUseColor(color) {
-        return colorCounts[currentColor] != 4 && (!numColorsMaxed || color in colorCounts)
-    }
-
-	function applyColor(tubeId, level) {
-		if (currentColor && canUseColor(currentColor)) {
-			console.debug(`apply color ${currentColor} to tube ${tubeId} level ${level}`);
-			const newLevels = [...tubes[tubeId]];
-			newLevels[level] = currentColor;
-			const newTubes = [...tubes];
-			newTubes[tubeId] = newLevels;
-			tubes = newTubes;
+			tubes = [...tubes, ...newTubes(inc, tubes.length)];
 		}
 	}
 
@@ -54,26 +42,56 @@
 		tubes = newTubes(10);
 	}
 
-    function removeEmpty(tubes) {
-        return tubes.map(tube => {
-            const firstEmpty = tube.indexOf('')
-            if (firstEmpty >= 0) {
-                return tube.slice(0, firstEmpty)
-            } else {
-                return tube
-            }
-        })
+	function removeEmpty(tubes) {
+		return tubes.map((tube) => {
+			const firstEmpty = tube.levels.indexOf('');
+			if (firstEmpty >= 0) {
+				return new Tube(tube.id, tube.levels.slice(0, firstEmpty))
+			} else {
+				return tube;
+			}
+		});
+	}
+
+	/* Color selection and use */
+
+	function pickColor(evt) {
+		currentColor = evt.detail;
+	}
+
+	function canUseColor(color) {
+		//return colorCounts[currentColor] != 4 && (!numColorsMaxed || color in colorCounts);
+        return true;
+	}
+
+    function toFullTube(values) {
+        if (values.length < 4) {
+            return values.concat(new Array(4 - values.length).fill(''))
+        }
+        return values
     }
 
+	function applyColor(tubeId, level) {
+		if (canUseColor(currentColor)) {
+			console.debug(`apply color ${currentColor} to tube ${tubeId} level ${level}`);
+            const currTube = tubes[tubeId];
+			const newLevels = toFullTube([...currTube.levels]);
+			newLevels[level] = currentColor || '';
+			const newTubes = [...tubes];
+			newTubes[tubeId] = new Tube(currTube.id, newLevels);
+			tubes = newTubes;
+		}
+	}
+
 	function doPlay() {
-        currentGame.set(removeEmpty(tubes));
+		currentGame.set(removeEmpty(tubes));
 		goto('/');
 	}
 
 	function count() {
 		const byColor = {};
 		for (const tube of tubes) {
-			for (const color of tube) {
+			for (const color of tube.levels) {
 				if (color) {
 					byColor[color] = ++byColor[color] || 1;
 				}
@@ -84,7 +102,7 @@
 
 	$: colorCounts = count(tubes);
 
-    $: numColorsMaxed = Object.keys(colorCounts).length >= tubes.length - 2;
+	$: numColorsMaxed = Object.keys(colorCounts).length >= tubes.length - 2;
 
 	$: playable =
 		Object.keys(colorCounts) === tubes.length &&
@@ -107,21 +125,26 @@
 		value={tubes.length}
 		on:change={resizeTubes}
 	/>
-    <span>Enough colors: {numColorsMaxed}</span>
+	<span>Enough colors: {numColorsMaxed}</span>
 </div>
 
 <ColorPicker on:color-pick={pickColor} counts={colorCounts} />
 
-<div class="tubes-container">
-	{#each tubes as tube, tid}
-		<div class="tube">
-			{#each tube as clr, lvl}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<div
-					class="block"
-					on:click={() => applyColor(tid, lvl)}
-					style:background-color="var(--clr-wtr{clr})"
-				/>
+<div>
+	{#each tubeRows as row}
+		<div class="tubes-row">
+			{#each row as tube}
+				<div class="tube">
+                    {#each Array(4) as _, lvl}
+					<!--{#each tube.levels as clr, lvl}-->
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<div
+							class="block"
+							on:click={() => applyColor(tube.id, lvl)}
+							style:background-color="var(--clr-wtr{tube.levels[lvl] || ''})"
+						/>
+					{/each}
+				</div>
 			{/each}
 		</div>
 	{/each}
@@ -131,12 +154,10 @@
 	input[type='number'] {
 		max-width: 6ch;
 	}
-	.tubes-container {
-        display: grid;
-		grid-template-rows: repeat(2, auto);
-        grid-auto-flow: column;
-		gap: 1rem;
-		margin-block: 1rem;
+	.tubes-row {
+		display: flex;
+		justify-content: space-around;
+		margin-block: 3rem;
 	}
 	.tube {
 		display: inline-flex;
