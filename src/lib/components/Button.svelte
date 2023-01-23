@@ -30,7 +30,7 @@
 			inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2);
 
 	}
-    .button:is(:focus, :hover) {
+    .button:is(:focus-visible, :hover) {
         box-shadow: 0px 0px .25em var(--clr-accent2),
 			0px 0px 0px .25em var(--clr-accent);
     }

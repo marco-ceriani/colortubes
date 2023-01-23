@@ -22,6 +22,7 @@
         solverWorker = new Solver()
         solverWorker.onmessage = function(evt) {
             solution = evt.data.actions
+            console.log(solution)
         }
 	});
 
@@ -31,6 +32,7 @@
 		game = new GameState($currentGame);
         selected = null;
 		moves = [];
+        solution = [];
         highlight = null;
 	}
 
@@ -96,12 +98,13 @@
 
 
 {#if game.status}
-	<EndModal message={game.won ? 'You Win!' : 'Game Over'} />
+	<EndModal result={game.status} />
 {/if}
 
 <style>
     .cols-2 {
         display: grid;
         grid-template-columns: 1fr max-content;
+        gap: 1.5rem;
     }
 </style>

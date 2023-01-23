@@ -17,6 +17,9 @@
     .log {
         min-width: 16ch;
     }
+    ol {
+        padding-inline-start: 1.2em;
+    }
     li {
         margin-block: .25rem;
     }

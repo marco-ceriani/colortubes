@@ -15,7 +15,7 @@
 			<div
 				class="waterblock"
 				style:background-color="var(--clr-wtr{level})"
-				transition:fly={{ y: -200, duration: 200, easing: linear }}
+				transition:fly|local={{ y: -200, duration: 200, easing: linear }}
 			/>
 		{/each}
 	</div>
@@ -37,7 +37,7 @@
 		box-shadow: 0px 0px 6px 4px hsl(66.6, 100%, 75%);
 	}
 	.selected {
-		transform: translateY(-1.5rem) rotate(-5deg);
+		transform: translateY(-2.0rem);
 	}
     .tube.highlight {
         outline: dashed .25rem var(--clr-accent2);

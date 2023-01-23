@@ -5,46 +5,76 @@
 	const dispatch = createEventDispatcher();
 
 	export let tubes;
-    export let selectable = '';
 	export let selected = null;
-    export let highlight = null;
+	export let highlight = null;
 
-    function isSelectable(id, current) {
-        if (current === id) {
-            return false
-        }
-        if (tubes[id].done) {
-            return false
-        }
-        if (selectable === 'non-empty' && tubes[id].empty) {
-            return false
-        }
-        if (selectable === 'non-full' && tubes[id].full) {
-            return false
-        }
-        return true
-    }
+	let rows = [];
+
+	$: rows = splitTubes(tubes);
+
+	function splitTubes(theTubes) {
+		const numPerRow =
+			theTubes.length <= 6
+				? theTubes.length
+				: theTubes.length <= 14
+				? (theTubes.length + 1) / 2
+				: 5;
+		const rows = [];
+		for (let i = 0; i < theTubes.length; i += numPerRow) {
+			rows.push(tubes.slice(i, i + numPerRow));
+		}
+		return rows;
+	}
+
+	function isSelectable(id) {
+		if (selected === id) {
+			return true;
+		}
+		if (tubes[id].done) {
+			return false;
+		}
+		if (selected === null && tubes[id].empty) {
+			return false;
+		}
+		if (selected !== null && tubes[id].full) {
+			return false;
+		}
+		return true;
+	}
 
 	function selectTube(id) {
-        if (isSelectable(id, selected)) {
-                // dispatch('move', {
-                //     from: selected,
-                //     to: id
-                // });
-            dispatch('select', id)
-        }
+		if (isSelectable(id, selected)) {
+			dispatch('select', id);
+		}
 	}
 </script>
 
+<!--
 <div class="tubes-container">
 	{#each tubes as tube}
 		<Tube
-            tube={tube}
+			{tube}
 			selected={selected === tube.id}
-            selectable={isSelectable(tube.id, selected)}
-            highlight = {highlight === tube.id}
+			selectable={isSelectable(tube.id, selected)}
+			highlight={highlight === tube.id}
 			on:click={() => selectTube(tube.id)}
 		/>
+	{/each}
+</div>
+-->
+<div class="tubes-container2">
+	{#each rows as row}
+		<div class="tubes-row">
+			{#each row as tube}
+				<Tube
+					{tube}
+					selected={selected === tube.id}
+					selectable={isSelectable(tube.id, selected)}
+					highlight={highlight === tube.id}
+					on:click={() => selectTube(tube.id)}
+				/>
+			{/each}
+		</div>
 	{/each}
 </div>
 
@@ -52,8 +82,13 @@
 	.tubes-container {
 		display: grid;
 		grid-template-rows: repeat(2, auto);
-        grid-auto-flow: column;
+		grid-auto-flow: column;
 		margin-block: 3rem;
 		row-gap: 3rem;
 	}
+    .tubes-row {
+        display: flex;
+        justify-content: space-around;
+        margin-block: 3rem;
+    }
 </style>

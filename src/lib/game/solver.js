@@ -1,12 +1,22 @@
 
 
 import { GameState } from "$lib/game/game.js"
+import { trusted } from "svelte/internal"
+
+function useless(state, action) {
+    const fromTube = state.tubes[action.from]
+    const toTube = state.tubes[action.to]
+    if (fromTube.singleColor && toTube.empty) {
+        return true
+    }
+    return false
+}
 
 export class TreeNode {
     constructor(state, parent, action) {
         this.state = state
         this.action = action
-        this.unevaluatedActions = state.possibleActions()
+        this.unevaluatedActions = state.possibleActions().filter(a => !useless(state, a))
 
         this.parent = parent
         this.children = []
@@ -15,7 +25,7 @@ export class TreeNode {
     }
 
     get isTerminalNode() {
-        return this.state.ended
+        return this.state.ended || (this.unevaluatedActions.length === 0 && this.children.length === 0)
     }
 
     get fullyExpanded() {
@@ -131,10 +141,10 @@ function rollout(game, maxSteps = 20) {
 
 function evaluate(state, actionsList) {
     if (state.won) {
-        return 1
+        return 50.0 / actionsList.length
     } else if (state.lost) {
         return 0
     }
-    return (1.0 * state.numClosed / state.tubes.length)
+    return ((1.0 * state.numClosed) / state.tubes.length)
 }
 
