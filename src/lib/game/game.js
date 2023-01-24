@@ -77,7 +77,7 @@ export class GameState {
         }
     }
 
-    applyMove({from, to}) {
+    applyMove({ from, to }) {
         const [newSourceTube, newDestTube] = moveWater(this.tubes[from], this.tubes[to]);
         const newTubes = [...this.tubes]
         newTubes[from] = newSourceTube
@@ -92,12 +92,54 @@ export class GameState {
     }
 
     getHash() {
-        return this.tubes.map(t => { 
+        return this.tubes.map(t => {
             return t.levels.concat(t.full ? [] : [0])
         }).flat()
-        .map(n => n.toString(36))
-        .join('')
+            .map(n => n.toString(36))
+            .join('')
     }
+}
+
+function randomItem(array) {
+    return array[Math.floor(Math.random() * array.length)]
+}
+
+export function randomGame(numTubes = 10) {
+    const tubes = new Array(numTubes - 2).fill()
+        .map((_, i) => new Array(4)
+            .fill(i + 1)).concat([[], []])
+
+    const game = new GameState(tubes)
+
+    for (let i = 0; i < 70; i++) {
+        const nonEmpty = game.tubes.filter(t => !t.empty)
+        const src = randomItem(nonEmpty)
+        
+        const nonFull = game.tubes.filter(t => !t.full && t.id !== src.id)
+        const dst = randomItem(nonFull)
+        console.log(`move ${i}: ${src.id} -> ${dst.id}`)
+
+        const moved = src.levels.splice(-1)
+        dst.levels.push(...moved)
+    }
+    let numEmpty = game.tubes.filter(t => t.empty).length
+    for (let i = 0; i < 100 && numEmpty < 2; i++) {
+        const nonEmpty = game.tubes.filter(t => !t.empty)
+        const src = randomItem(nonEmpty)
+        
+        const destinations = game.tubes.filter(t => !t.full && t.levels.length > src.levels.length)
+        if (destinations.length > 0) {
+            const dst = randomItem(destinations)
+            console.log(`move: ${src.id} -> ${dst.id}`)
+    
+            const moved = src.levels.splice(-1)
+            dst.levels.push(...moved)
+        }
+        numEmpty = game.tubes.filter(t => t.empty).length
+    }
+
+    game.status = undefined
+    return tubes
 }
 
 export const currentGame = writable([

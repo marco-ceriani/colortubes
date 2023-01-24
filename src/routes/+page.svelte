@@ -5,7 +5,7 @@
 	import Tubes from '$lib/components/TubesContainer.svelte';
 	import Moves from '$lib/components/MovesLog.svelte';
 	import EndModal from '$lib/components/EndModal.svelte';
-	import { GameState, currentGame } from '$lib/game/game.js';
+	import { GameState, currentGame, randomGame } from '$lib/game/game.js';
 
     import Solver from '$lib/solve-worker?worker'
 	let solverWorker = undefined;
@@ -24,9 +24,18 @@
             solution = evt.data.actions
             console.log(solution)
         }
+
 	});
 
     $: selectable = selected ? 'non-full' : 'non-empty';
+
+    function newGame() {
+        console.log('generating new game')
+        const xxx = randomGame()
+        console.log(`Random: ${JSON.stringify(xxx)}`)
+        currentGame.set(xxx)
+        game = new GameState($currentGame);
+    }
 
 	function reset() {
 		game = new GameState($currentGame);
@@ -82,6 +91,7 @@
 
 <ButtonsBar>
     <Button href="/edit">Custom</Button>
+    <Button on:click={newGame}>New</Button>
     <Button on:click={reset}>Reset</Button>
     {#if solverWorker && solution.length == 0}
         <Button on:click={solve}>Solve</Button>
