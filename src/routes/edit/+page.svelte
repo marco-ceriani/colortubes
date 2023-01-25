@@ -109,7 +109,7 @@
 <h2>Edit Puzzle</h2>
 <ButtonsBar>
 	<Button on:click={reset}>Reset</Button>
-	<Button href="/">Discard</Button>
+	<Button href="{base}/">Discard</Button>
 	<Button on:click={doPlay} disabled={!playable}>Play</Button>
 </ButtonsBar>
 <div>
