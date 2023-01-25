@@ -31,11 +31,12 @@
     $: selectable = selected ? 'non-full' : 'non-empty';
 
     function newGame() {
-        console.log('generating new game')
-        const xxx = randomGame()
-        console.log(`Random: ${JSON.stringify(xxx)}`)
-        currentGame.set(xxx)
+        console.debug('generating new game')
+        currentGame.set(randomGame())
         game = new GameState($currentGame);
+        moves = []
+        solution = []
+        highlight = null
     }
 
 	function reset() {
