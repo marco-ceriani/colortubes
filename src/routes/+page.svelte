@@ -56,6 +56,9 @@
         if (selected === null) {
             selected = newIndex
             console.debug(`selecting ${selected}`)
+        } else if (selected === newIndex) {
+            console.debug(`deselecting ${selected}`)
+            selected = null;
         } else {
             moveWater(selected, newIndex)
             if (solution.length > 0) {
