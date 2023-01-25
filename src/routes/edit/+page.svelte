@@ -1,5 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
 	import Button from '$lib/components/Button.svelte';
 	import ButtonsBar from '$lib/components/ButtonsBar.svelte';
@@ -95,7 +96,7 @@
 	function doPlay() {
         if (playable) {
             currentGame.set(removeEmpty(tubes));
-            goto('/');
+            goto(base + '/');
         }
 	}
 

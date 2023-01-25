@@ -1,3 +1,8 @@
+<script>
+    export const prerender = true;
+    export const trailingSlash = 'always';
+</script>
+
 <div class="root-container">
 	<header>
 		<h1>Color Water Tubes</h1>

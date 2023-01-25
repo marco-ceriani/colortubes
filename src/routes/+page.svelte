@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+    import { base } from '$app/paths';
     import Button from '$lib/components/Button.svelte';
     import ButtonsBar from '$lib/components/ButtonsBar.svelte';
 	import Tubes from '$lib/components/TubesContainer.svelte';
@@ -90,7 +91,7 @@
 </script>
 
 <ButtonsBar>
-    <Button href="/edit">Custom</Button>
+    <Button href="{base}/edit">Custom</Button>
     <Button on:click={newGame}>New</Button>
     <Button on:click={reset}>Reset</Button>
     {#if solverWorker && solution.length == 0}
