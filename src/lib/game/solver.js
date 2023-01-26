@@ -1,7 +1,6 @@
 
 
-import { GameState } from "$lib/game/game.js"
-import { trusted } from "svelte/internal"
+const C_PARAM = 2 // theoretically 1.415
 
 function useless(state, action) {
     const fromTube = state.tubes[action.from]
@@ -49,9 +48,9 @@ export class TreeNode {
     }
 
     // tune the formula
-    getUpperConfidenceBound(cParam = 1.415) {
+    getUpperConfidenceBound() {
         if (this.visits === 0) return Infinity
-        return (this.reward / this.visits) + Math.sqrt(2 * Math.log(this.parent.visits) / this.visits)
+        return (this.reward / this.visits) + C_PARAM * Math.sqrt( Math.log(this.parent.visits) / this.visits)
     }
 
     expand() {
@@ -85,8 +84,10 @@ export function search_mcts(state) {
     let bestReward = -Infinity
     let bestActions = []
 
-    for (let i = 0; i < iterations; i++) {
-        console.debug(`iteration ${i}`)
+    const startTime = new Date().valueOf();
+    let counter = 0;
+
+    while (new Date().valueOf() - startTime < 1000) {
         const [leaf, preActions] = traverse(root)
         const [finalState, rolloutActions] = rollout(leaf.state, maxRollout)
         const actions = preActions.concat(rolloutActions)
@@ -98,9 +99,10 @@ export function search_mcts(state) {
             bestReward = simulationReward
             bestResult = finalState.status
         }
+        counter++
     }
 
-    console.info(`best result: ${bestReward} - ${bestResult}`)
+    console.info(`best result: ${bestResult} with value ${bestReward.toFixed(2)} after ${counter} iterations`)
     return {
         result: bestResult,
         actions: bestActions
