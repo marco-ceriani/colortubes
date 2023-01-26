@@ -104,7 +104,8 @@ function randomItem(array) {
     return array[Math.floor(Math.random() * array.length)]
 }
 
-export function randomGame(numTubes = 10) {
+export function randomGame(numTubes) {
+    numTubes = numTubes || 8 + Math.floor(Math.random() * 5)
     const tubes = new Array(numTubes - 2).fill()
         .map((_, i) => new Array(4)
             .fill(i + 1)).concat([[], []])
