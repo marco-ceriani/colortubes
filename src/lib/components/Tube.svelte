@@ -24,7 +24,7 @@
 
 <style>
 	.tube {
-		width: 3rem;
+		width: clamp(2.5rem, 6vw, 3rem);
 		height: 12rem;
 		margin-inline: auto;
 		display: flex;

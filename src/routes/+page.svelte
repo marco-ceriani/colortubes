@@ -95,8 +95,8 @@
 </script>
 
 <ButtonsBar>
-    <Button href="{base}/edit">Custom</Button>
     <Button on:click={newGame}>New</Button>
+    <Button href="{base}/edit">Custom</Button>
     <Button on:click={reset}>Reset</Button>
     {#if solverWorker && solution.length == 0}
         <Button on:click={solve}>Solve</Button>
@@ -108,7 +108,6 @@
 
 <div class="cols-2">
 	<Tubes tubes={game.tubes} {selected} {selectable} {highlight} on:select={selectTube} />
-    <Moves {moves} />
 </div>
 
 

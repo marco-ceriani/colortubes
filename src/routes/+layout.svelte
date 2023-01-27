@@ -16,7 +16,7 @@
 <style>
 	header {
 		text-align: center;
-		font-size: 1.25rem;
+		font-size: clamp(1rem, 3.5vw, 1.25rem);
 		margin-block: 0.75rem;
 	}
 	h1 {
