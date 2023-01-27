@@ -13,32 +13,47 @@ describe("tube status", () => {
     })
 
     it('full tube with different colors', () => {
-        const tube = new Tube(0, ['wtr1', 'wtr2', 'wtr0', 'wtr4'])
+        const tube = new Tube(0, [1, 2, 0, 4])
         expect(tube.empty).toBeFalsy()
         expect(tube.full).toBeTruthy()
         expect(tube.done).toBeFalsy()
         expect(tube.emptySpace).toBe(0)
+        expect(tube.topColor).toBe(4)
         expect(tube.topAmount).toBe(1)
+        expect(tube.singleColor).toBeFalsy()
     })
 
     it('complete tube', () => {
-        const tube = new Tube(0, ['wtr1', 'wtr1', 'wtr1', 'wtr1'])
+        const tube = new Tube(0, [1, 1, 1, 1])
         expect(tube.empty).toBeFalsy()
         expect(tube.full).toBeTruthy()
         expect(tube.done).toBeTruthy()
         expect(tube.emptySpace).toBe(0)
+        expect(tube.topColor).toBe(1)
+        expect(tube.topAmount).toBe(4)
+        expect(tube.singleColor).toBeTruthy()
     })
 
     it('one level', () => {
-        const tube = new Tube(0, ['wtr3'])
-        expect(tube.topColor).toBe('wtr3')
+        const tube = new Tube(0, [3])
+        expect(tube.empty).toBeFalsy()
+        expect(tube.full).toBeFalsy()
+        expect(tube.done).toBeFalsy()
+        expect(tube.emptySpace).toBe(3)
+        expect(tube.topColor).toBe(3)
         expect(tube.topAmount).toBe(1)
+        expect(tube.singleColor).toBeTruthy()
     })
 
     it('two levels equal', () => {
-        const tube = new Tube(0, ['wtr2', 'wtr2'])
-        expect(tube.topColor).toBe('wtr2')
+        const tube = new Tube(0, [2, 2])
+        expect(tube.empty).toBeFalsy()
+        expect(tube.full).toBeFalsy()
+        expect(tube.done).toBeFalsy()
+        expect(tube.emptySpace).toBe(2)
+        expect(tube.topColor).toBe(2)
         expect(tube.topAmount).toBe(2)
+        expect(tube.singleColor).toBeTruthy()
     })
 })
 
@@ -49,22 +64,22 @@ describe("tube status", () => {
 describe('test accepts color', () => {
     it ('empty tubes accept anything', () => {
         const tube = new Tube(0)
-        expect(tube.accepts('wtr0')).toBeTruthy()
-        expect(tube.accepts('wtr1')).toBeTruthy()
+        expect(tube.accepts(0)).toBeTruthy()
+        expect(tube.accepts(1)).toBeTruthy()
     })
 
     it ('full tubes accept nothing', () => {
-        const tube = new Tube(0, ['wtr0', 'wtr0', 'wtr0', 'wtr0'])
-        expect(tube.accepts('wtr1')).toBeFalsy()
-        expect(tube.accepts('wtr0')).toBeFalsy()
+        const tube = new Tube(0, [0, 0, 0, 0])
+        expect(tube.accepts(1)).toBeFalsy()
+        expect(tube.accepts(0)).toBeFalsy()
     })
 
     it ('half-full tubes accept same color', () => {
-        const tube = new Tube(0, ['wtr0'])
-        expect(tube.accepts('wtr1')).toBeFalsy()
-        expect(tube.accepts('wtr0')).toBeTruthy()
-        expect(tube.accepts('wtr0')).toBe(3)
-        tube.levels = ['wtr0', 'wtr0']
-        expect(tube.accepts('wtr0')).toBe(2)
+        const tube = new Tube(0, [0])
+        expect(tube.accepts(1)).toBeFalsy()
+        expect(tube.accepts(0)).toBeTruthy()
+        expect(tube.accepts(0)).toBe(3)
+        tube.levels = [0, 0]
+        expect(tube.accepts(0)).toBe(2)
     })
 })

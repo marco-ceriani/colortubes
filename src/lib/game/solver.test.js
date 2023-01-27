@@ -33,17 +33,18 @@ describe('tree logic', () => {
         b2.backpropagate(-1)
 
         expect(a1.visits).toBe(3)
-        expect(a1.value).toBe(6)
+        expect(a1.reward).toBe(6)
         expect(a2.visits).toBe(1)
-        expect(a2.value).toBe(-3)
+        expect(a2.reward).toBe(-3)
     })
 
     it('terminal check', () => {
-        const node1 = aNode({get ended() { return false}})
-        const node2 = aNode({get ended() { return true}})
+        const node1 = aNode({get ended() { return true }})
+        expect(node1.isTerminalNode).toBeTruthy()
 
-        expect(node1.isTerminalNode).toBeFalsy()
-        expect(node2.isTerminalNode).toBeTruthy()
+        const node2 = aNode({get ended() { return false }})
+        node2.children.push(aNode('ch'))
+        expect(node2.isTerminalNode).toBeFalsy()
     })
 })
 
