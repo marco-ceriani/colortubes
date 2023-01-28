@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { TreeNode } from './solver.js'
+import { TreeNode, Wheel } from './solver.js'
 
 function aState(value) {
     const dummy = {
@@ -48,4 +48,25 @@ describe('tree logic', () => {
     })
 })
 
+describe('random wheel', () => {
+    const items = ['a', 'b', 'c', 'd', 'e']
+    const wheel = new Wheel(items, [.1, .1, .3, 0, .5])
+    const results = {}
+    const iterations = 10_000
+    for (let i = 0; i < 10_000; i++) {
+        const item = wheel.randomItem()
+        results[item] = (results[item] || 0) + 1
+    }
+    for (const item of items) {
+        results[item] = (results[item] || 0) / iterations
+    }
+    it('results distribution are close to weight', () => {
+        console.log(results)
+        expect(results['a']).toBeCloseTo(.1, 1)
+        expect(results['b']).toBeCloseTo(.1, 1)
+        expect(results['c']).toBeCloseTo(.3, 1)
+        expect(results['d']).toBe(0)
+        expect(results['e']).toBeCloseTo(.5, 1)
+    })
+})
 
