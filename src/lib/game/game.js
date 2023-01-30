@@ -1,6 +1,9 @@
 import { moveWater, Tube } from './tube';
 import { writable } from 'svelte/store';
 
+// keep this consistent with global.css
+export const NUM_COLORS = 18
+
 function getActions(tubes) {
     let actions = []
     for (let i = 0; i < tubes.length; i++) {
@@ -104,11 +107,26 @@ function randomItem(array) {
     return array[Math.floor(Math.random() * array.length)]
 }
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function randomColors(size) {
+    const allColors = Array(NUM_COLORS).fill().map((_, i) => i + 1)
+    shuffleArray(allColors)
+    return allColors.slice(0, size)
+}
+
 export function randomGame(numTubes) {
     numTubes = numTubes || 8 + Math.floor(Math.random() * 5)
+    const colors = randomColors(numTubes - 2)
+
     const tubes = new Array(numTubes - 2).fill()
         .map((_, i) => new Array(4)
-            .fill(i + 1)).concat([[], []])
+            .fill(colors[i])).concat([[], []])
 
     const game = new GameState(tubes)
 

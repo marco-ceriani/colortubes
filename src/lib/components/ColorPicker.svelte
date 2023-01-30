@@ -1,11 +1,11 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    import { NUM_COLORS } from '$lib/game/game.js';
     const dispatch = createEventDispatcher();
 
-    export let numColors = 17
     export let counts = {}
     
-    const colors = Array(numColors).fill().map((_, i) => i + 1)
+    const colors = Array(NUM_COLORS).fill().map((_, i) => i + 1)
     let selected = null
 
     function selectColor(color) {
