@@ -2,7 +2,7 @@ import { moveWater, Tube } from './tube';
 import { writable } from 'svelte/store';
 
 // keep this consistent with global.css
-export const NUM_COLORS = 18
+export const NUM_COLORS = 19
 
 function getActions(tubes) {
     let actions = []
