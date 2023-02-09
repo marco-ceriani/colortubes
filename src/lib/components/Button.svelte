@@ -1,18 +1,24 @@
 <script>
 	export let href = null;
     export let disabled = false;
+    export let spin = false;
 </script>
 
 {#if href}
 	<a class="button" {href} role="button"><slot /></a>
 {:else}
-	<button class="button" {disabled} on:click><slot /></button>
+	<button class="button" {disabled} class:spinning={spin} on:click>
+        {#if !spin}
+        <slot />
+        {/if}
+    </button>
 {/if}
 
 <style>
 	.button {
 		display: inline-flex;
         align-items: center;
+        position: relative;
 
 		padding: 0.25em 0.875em;
         font-size: 1rem;
@@ -37,4 +43,30 @@
         background: hsl(0, 0%, 50%);
         cursor: default;
     }
+    .button.spinning::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        border: 4px solid transparent;
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: button-loading-spinner 1s ease infinite;
+    }
+
+    @keyframes button-loading-spinner {
+        from {
+            transform: rotate(0turn);
+        }
+
+        to {
+            transform: rotate(1turn);
+        }
+    }
+
 </style>

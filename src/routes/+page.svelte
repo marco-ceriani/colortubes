@@ -10,6 +10,7 @@
 
     import Solver from '$lib/solve-worker?worker'
 	let solverWorker = undefined;
+    let solving = false;
 
 	let game = new GameState($currentGame);
     let selected = null;
@@ -22,8 +23,11 @@
 	onMount(async () => {
         solverWorker = new Solver()
         solverWorker.onmessage = function(evt) {
-            solution = evt.data.actions
-            console.log(solution)
+            if ('win' === evt.data.result) {
+                solution = evt.data.actions
+                console.debug(solution)
+            }
+            solving = false;
         }
 
 	});
@@ -49,6 +53,7 @@
 
 	function solve() {
 		solverWorker.postMessage(game);
+        solving = true;
 	}
 
     function selectTube(evt) {
@@ -99,7 +104,7 @@
     <Button href="{base}/edit">Custom</Button>
     <Button on:click={reset}>Reset</Button>
     {#if solverWorker && solution.length == 0}
-        <Button on:click={solve}>Solve</Button>
+        <Button on:click={solve} spin={solving}>Solve</Button>
     {/if}
     {#if solution.length > 0} 
         <Button on:click={hint}>💡</Button>

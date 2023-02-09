@@ -109,7 +109,8 @@ export function search_mcts(state) {
     const startTime = new Date().valueOf();
     let counter = 0;
 
-    while (new Date().valueOf() - startTime < 1000) {
+    let elapsed = 0
+    while (elapsed < 1000 || bestResult !== 'win' && elapsed < 3000) {
         const [leaf, preActions] = traverse(root)
         const [finalState, rolloutActions] = rollout(leaf.state, maxRollout)
         const actions = preActions.concat(rolloutActions)
@@ -122,9 +123,10 @@ export function search_mcts(state) {
             bestResult = finalState.status
         }
         counter++
+        elapsed = new Date().valueOf() - startTime
     }
 
-    console.info(`best result: ${bestResult} with value ${bestReward.toFixed(2)} after ${counter} iterations`)
+    console.info(`best result: ${bestResult} with value ${bestReward.toFixed(2)} after ${counter} iterations (${elapsed}ms)`)
     return {
         result: bestResult,
         actions: bestActions
