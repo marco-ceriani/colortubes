@@ -7,11 +7,11 @@
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
 
 	import { Tube } from '$lib/game/tube.js';
-    import { currentGame } from '$lib/game/game.js';
+    import { GameState, currentGame } from '$lib/game/game.js';
 	import { distributeOnRows } from '$lib/components/tubesLayout.js';
 	
-	let tubes = $currentGame;
-	let tubeRows = [tubes];
+	let game = $currentGame;
+	let tubeRows = [game.tubes];
 	let currentColor = null;
 	let colorCounts = {};
 
@@ -19,7 +19,7 @@
 
 	/* Tubes */
 
-	$: tubeRows = distributeOnRows(tubes);
+	$: tubeRows = distributeOnRows(game.tubes);
 
 	function newTubes(size, start = 0) {
 		return Array(size)
@@ -29,17 +29,17 @@
 
 	function resizeTubes(evt) {
 		const newSize = evt.target.value;
-		if (newSize < tubes.length) {
-			tubes = tubes.slice(0, newSize);
+		if (newSize < game.tubes.length) {
+			game.tubes = game.tubes.slice(0, newSize);
 		}
-		if (newSize > tubes.length) {
-			const inc = newSize - tubes.length;
-			tubes = [...tubes, ...newTubes(inc, tubes.length)];
+		if (newSize > game.tubes.length) {
+			const inc = newSize - game.tubes.length;
+			game.tubes = [...game.tubes, ...newTubes(inc, game.tubes.length)];
 		}
 	}
 
 	function reset() {
-		tubes = newTubes(10);
+		game.tubes = newTubes(10);
 	}
 
 	function removeEmpty(tubes) {
@@ -68,17 +68,17 @@
 
 	function applyColor(tubeId, level) {
         console.debug(`apply color ${currentColor} to tube ${tubeId} level ${level}`);
-        const currTube = tubes[tubeId];
+        const currTube = game.tubes[tubeId];
         const newLevels = toFullTube([...currTube.levels]);
         newLevels[level] = currentColor || '';
-        const newTubes = [...tubes];
+        const newTubes = [...game.tubes];
         newTubes[tubeId] = new Tube(currTube.id, newLevels);
-        tubes = newTubes;
+        game.tubes = newTubes;
 	}
 
 	function count() {
 		const byColor = {};
-		for (const tube of tubes) {
+		for (const tube of game.tubes) {
 			for (const color of tube.levels) {
 				if (color) {
 					byColor[color] = ++byColor[color] || 1;
@@ -95,12 +95,12 @@
 
 	function doPlay() {
         if (playable) {
-            currentGame.set(removeEmpty(tubes));
+            currentGame.set(new GameState(removeEmpty(game.tubes)));
             goto(base + '/');
         }
 	}
 
-	$: colorCounts = count(tubes);
+	$: colorCounts = count(game.tubes);
 
     $: playable = isPlayable(colorCounts)
 
@@ -118,8 +118,8 @@
 		type="number"
 		name="num_tubes"
 		min="5"
-		max="15"
-		value={tubes.length}
+		max="20"
+		value={game.tubes.length}
 		on:change={resizeTubes}
 	/>
 </div>

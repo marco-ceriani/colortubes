@@ -121,7 +121,7 @@ function randomColors(size) {
 }
 
 export function randomGame(numTubes) {
-    numTubes = numTubes || 8 + Math.floor(Math.random() * 5)
+    numTubes = numTubes || 10 + Math.floor(Math.random() * 6)
     const colors = randomColors(numTubes - 2)
 
     const tubes = new Array(numTubes - 2).fill()
@@ -136,7 +136,7 @@ export function randomGame(numTubes) {
         
         const nonFull = game.tubes.filter(t => !t.full && t.id !== src.id)
         const dst = randomItem(nonFull)
-        console.log(`move ${i}: ${src.id} -> ${dst.id}`)
+        console.debug(`move ${i}: ${src.id} -> ${dst.id}`)
 
         const moved = src.levels.splice(-1)
         dst.levels.push(...moved)
@@ -149,7 +149,7 @@ export function randomGame(numTubes) {
         const destinations = game.tubes.filter(t => !t.full && t.levels.length > src.levels.length)
         if (destinations.length > 0) {
             const dst = randomItem(destinations)
-            console.log(`move: ${src.id} -> ${dst.id}`)
+            console.debug(`move: ${src.id} -> ${dst.id}`)
     
             const moved = src.levels.splice(-1)
             dst.levels.push(...moved)
@@ -157,22 +157,8 @@ export function randomGame(numTubes) {
         numEmpty = game.tubes.filter(t => t.empty).length
     }
 
-    game.status = undefined
-    return tubes
+    return new GameState(game.tubes)
 }
 
-export const currentGame = writable([
-    [9, 8, 5, 2],
-    [1, 3, 3, 3],
-    [6, 5, 8, 5],
-    [7, 6, 2, 9],
-    [9, 6, 8, 7],
-    [7, 6, 4, 3],
-
-    [2, 1, 8, 5],
-    [1, 4, 9, 4],
-    [1, 7, 2, 4],
-    [],
-    []
-].map((water, i) => new Tube(i, water)))
+export const currentGame = writable(randomGame())
 

@@ -4,15 +4,14 @@
     import Button from '$lib/components/Button.svelte';
     import ButtonsBar from '$lib/components/ButtonsBar.svelte';
 	import Tubes from '$lib/components/TubesContainer.svelte';
-	import Moves from '$lib/components/MovesLog.svelte';
 	import EndModal from '$lib/components/EndModal.svelte';
-	import { GameState, currentGame, randomGame } from '$lib/game/game.js';
+	import { currentGame, randomGame } from '$lib/game/game.js';
 
     import Solver from '$lib/solve-worker?worker'
 	let solverWorker = undefined;
     let solving = false;
 
-	let game = new GameState($currentGame);
+	let game = $currentGame;
     let selected = null;
     let selectable;
 	let moves = [];
@@ -37,14 +36,14 @@
     function newGame() {
         console.debug('generating new game')
         currentGame.set(randomGame())
-        game = new GameState($currentGame);
+        game = $currentGame;
         moves = []
         solution = []
         highlight = null
     }
 
 	function reset() {
-		game = new GameState($currentGame);
+		game = $currentGame;
         selected = null;
 		moves = [];
         solution = [];
