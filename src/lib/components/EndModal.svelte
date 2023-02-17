@@ -1,9 +1,7 @@
 <script>
     import {fade} from 'svelte/transition'
-    export let message
-    export let result
 
-    $: console.log(result)
+    export let result
 
     $: message = result === "win" ? "🏅 You Win 🏅" : "You lose 😞"
 </script>

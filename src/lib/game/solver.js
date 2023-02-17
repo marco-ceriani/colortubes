@@ -11,28 +11,6 @@ function useless(state, action) {
     return false
 }
 
-export class Wheel {
-    constructor(items, weights) {
-        this.items = items
-        this.cumulative = []
-        this.tot = 0
-        for (let i = 0; i < items.length; i++) {
-            this.tot += weights[i]
-            this.cumulative.push(this.tot)
-        }
-    }
-
-    randomItem() {
-        const rnd = Math.random() * this.tot
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.cumulative[i] > rnd) {
-                return this.items[i]
-            }
-        }
-        return this.items[this.items.length - 1]
-    }
-}
-
 export class TreeNode {
     constructor(state, parent, action) {
         this.state = state

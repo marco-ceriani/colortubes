@@ -4,6 +4,28 @@ import { writable } from 'svelte/store';
 // keep this consistent with global.css
 export const NUM_COLORS = 19
 
+export class Wheel {
+    constructor(items, weights) {
+        this.items = items
+        this.cumulative = []
+        this.tot = 0
+        for (let i = 0; i < items.length; i++) {
+            this.tot += weights[i]
+            this.cumulative.push(this.tot)
+        }
+    }
+
+    randomItem() {
+        const rnd = Math.random() * this.tot
+        for (let i = 0; i < this.items.length; i++) {
+            if (this.cumulative[i] > rnd) {
+                return this.items[i]
+            }
+        }
+        return this.items[this.items.length - 1]
+    }
+}
+
 function getActions(tubes) {
     let actions = []
     for (let i = 0; i < tubes.length; i++) {
@@ -131,14 +153,17 @@ export function randomGame(numTubes) {
     const game = new GameState(tubes)
 
     for (let i = 0; i < 70; i++) {
-        const nonEmpty = game.tubes.filter(t => !t.empty)
-        const src = randomItem(nonEmpty)
+        console.debug(JSON.stringify(game.tubes))
+        const src = new Wheel(game.tubes, game.tubes.map(t => t.topAmount)).randomItem()
         
         const nonFull = game.tubes.filter(t => !t.full && t.id !== src.id)
         const dst = randomItem(nonFull)
-        console.debug(`move ${i}: ${src.id} -> ${dst.id}`)
+        
+        const maxSize = Math.min((src.singleColor ? src.topAmount - 1 : src.topAmount), dst.emptySpace)
+        const size = new Wheel([1,2,3].splice(0,maxSize), [1, 3, 9].splice(maxSize)).randomItem()
+        console.debug(`move ${i}: ${src.id} -> ${dst.id}, ${size} blocks`)
 
-        const moved = src.levels.splice(-1)
+        const moved = src.levels.splice(-size)
         dst.levels.push(...moved)
     }
     let numEmpty = game.tubes.filter(t => t.empty).length
