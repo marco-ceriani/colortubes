@@ -39,7 +39,7 @@
 	}
 
 	function reset() {
-		game.tubes = newTubes(10);
+		game.tubes = newTubes(game.tubes.length);
 	}
 
 	function removeEmpty(tubes) {
@@ -95,7 +95,8 @@
 
 	function doPlay() {
         if (playable) {
-            currentGame.set(new GameState(removeEmpty(game.tubes)));
+            const newGame = new GameState(removeEmpty(game.tubes))
+            currentGame.set(newGame);
             goto(base + '/');
         }
 	}

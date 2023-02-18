@@ -1,6 +1,7 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 	import Tube from './Tube.svelte';
+    import { distributeOnRows } from '$lib/components/tubesLayout.js';
 
 	const dispatch = createEventDispatcher();
 
@@ -10,21 +11,7 @@
 
 	let rows = [];
 
-	$: rows = splitTubes(tubes);
-
-	function splitTubes(theTubes) {
-		const numPerRow =
-			theTubes.length <= 6
-				? theTubes.length
-				: theTubes.length <= 14
-				? (theTubes.length + 1) / 2
-				: 5;
-		const rows = [];
-		for (let i = 0; i < theTubes.length; i += numPerRow) {
-			rows.push(tubes.slice(i, i + numPerRow));
-		}
-		return rows;
-	}
+	$: rows = distributeOnRows(tubes);
 
 	function isSelectable(id) {
 		if (selected === id) {
