@@ -2,6 +2,21 @@
 
 const C_PARAM = 2 // theoretically 1.415
 
+function goodActions(state, prevAction) {
+    const legalActions = state.possibleActions()
+
+    return legalActions.filter(a => {
+        if (state.tubes[a.from].singleColor && state.tubes[a.to].empty) {
+            return false
+        }
+        if (a.from === prevAction?.toIndex && a.to === prevAction?.fromIndex) {
+            console.debug('filtered back move')
+            return false
+        }
+        return true
+    })
+}
+
 function useless(state, action) {
     const fromTube = state.tubes[action.from]
     const toTube = state.tubes[action.to]
@@ -15,7 +30,7 @@ export class TreeNode {
     constructor(state, parent, action) {
         this.state = state
         this.action = action
-        this.unevaluatedActions = state.possibleActions().filter(a => !useless(state, a))
+        this.unevaluatedActions = goodActions(state, action)
 
         this.parent = parent
         this.children = []
@@ -77,8 +92,7 @@ export class TreeNode {
  */
 export function search_mcts(state) {
     const root = new TreeNode(state, null)
-    const iterations = 1000
-    const maxRollout = 50
+    const maxRollout = 10 + state.tubes.length * 4 
     
     let bestResult = undefined
     let bestReward = -Infinity
@@ -88,7 +102,7 @@ export function search_mcts(state) {
     let counter = 0;
 
     let elapsed = 0
-    while (elapsed < 1000 || bestResult !== 'win' && elapsed < 3000) {
+    while (elapsed < 1000 || bestResult !== 'win' && elapsed < 5000) {
         const [leaf, preActions] = traverse(root)
         const [finalState, rolloutActions] = rollout(leaf.state, maxRollout)
         const actions = preActions.concat(rolloutActions)
@@ -135,7 +149,7 @@ function rollout(game, maxSteps = 20) {
     const movesSequence = []
     let currState = game
     for (let i = 0; !currState.ended && i < maxSteps; i++) {
-        const moves = currState.possibleActions();
+        const moves = goodActions(currState)
         const move = rolloutPolicy(moves)
         movesSequence.push(currState.historyEntry(move))
         currState = currState.applyMove(move)
