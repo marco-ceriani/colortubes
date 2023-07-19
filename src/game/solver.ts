@@ -3,7 +3,7 @@ import { GameStatus } from './game'
 
 const C_PARAM = 2 // theoretically 1.415
 
-type ExplorationResult = {
+export type ExplorationResult = {
     result: GameStatus,
     actions: GameMoveRecord[]
 }

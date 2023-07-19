@@ -8,7 +8,7 @@
 
 	export let tubes: Tube[];
 	export let selected: number = null;
-	export let highlight = null;
+	export let highlight: number = null;
 
 	let rows: Tube[][] = [];
 

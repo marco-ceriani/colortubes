@@ -179,7 +179,7 @@ export function randomGame(numTubes: number = 0): GameState {
     const game = new GameState(tubes)
 
     for (let i = 0; i < 70; i++) {
-        console.debug(JSON.stringify(game.tubes))
+        //console.debug(JSON.stringify(game.tubes))
         const src = new Wheel(game.tubes, game.tubes.map(t => t.topAmount)).randomItem()
         
         const nonFull = game.tubes.filter(t => !t.full && t.id !== src.id)
@@ -187,7 +187,7 @@ export function randomGame(numTubes: number = 0): GameState {
         
         const maxSize = Math.min((src.singleColor ? src.topAmount - 1 : src.topAmount), dst.emptySpace)
         const size = new Wheel([1,2,3].splice(0,maxSize), [1, 3, 9].splice(maxSize)).randomItem()
-        console.debug(`move ${i}: ${src.id} -> ${dst.id}, ${size} blocks`)
+        //console.debug(`move ${i}: ${src.id} -> ${dst.id}, ${size} blocks`)
 
         const moved = src.levels.splice(-size)
         dst.levels.push(...moved)
@@ -200,7 +200,7 @@ export function randomGame(numTubes: number = 0): GameState {
         const destinations = game.tubes.filter(t => !t.full && t.levels.length > src.levels.length)
         if (destinations.length > 0) {
             const dst = randomItem(destinations)
-            console.debug(`move: ${src.id} -> ${dst.id}`)
+            //console.debug(`move: ${src.id} -> ${dst.id}`)
     
             const moved = src.levels.splice(-1)
             dst.levels.push(...moved)

@@ -1,8 +1,8 @@
-import { Tube } from '$lib/game/tube.js'
-import { GameState } from '$lib/game/game.js'
-import { search_mcts } from '$lib/game/solver.js'
+import { Tube } from './game/tube'
+import { GameState } from './game/game'
+import { search_mcts } from './game/solver'
 
-onmessage = (msg) => {
+onmessage = (msg: MessageEvent<GameState>) => {
     console.log(`received message`)
     const tubes = msg.data.tubes.map(t => new Tube(t.id, t.levels))
     const game = new GameState(tubes)
