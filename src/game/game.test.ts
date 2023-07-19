@@ -5,9 +5,9 @@ import { GameState, Wheel } from './game';
 describe('listing next actions', () => {
     it('any color to empty', () => {
         const state = new GameState([
-            new Tube(0, ['wtr0', 'wtr0', 'wtr1', 'wtr1']),
+            new Tube(0, [0, 0, 1, 1]),
             new Tube(1, []),
-            new Tube(2, ['wtr0', 'wtr0', 'wtr2', 'wtr2'])
+            new Tube(2, [0, 0, 2, 2])
         ])
         const actions = state.possibleActions()
         expect(actions.length).toBe(2)
@@ -17,8 +17,8 @@ describe('listing next actions', () => {
 
     it('full to same color, not opposite', () => {
         const state = new GameState([
-            new Tube(0, ['wtr0', 'wtr0', 'wtr1', 'wtr1']),
-            new Tube(1, ['wtr1'])
+            new Tube(0, [0, 0, 1, 1]),
+            new Tube(1, [1])
         ])
         const actions = state.possibleActions()
         expect(actions.length).toBe(1)
@@ -28,9 +28,9 @@ describe('listing next actions', () => {
 
     it('to same color', () => {
         const state = new GameState([
-            new Tube(1, ['wtr1']),
-            new Tube(2, ['wtr2', 'wtr2', 'wtr2']),
-            new Tube(3, ['wtr0', 'wtr0', 'wtr1'])
+            new Tube(1, [1]),
+            new Tube(2, [2, 2, 2]),
+            new Tube(3, [0, 0, 1])
         ])
         const actions = state.possibleActions()
         expect(actions).toEqual(
@@ -41,34 +41,21 @@ describe('listing next actions', () => {
 
     it('no moves', () => {
         const state = new GameState([
-            new Tube(0, ['wtr0', 'wtr1', 'wtr1', 'wtr2']),
-            new Tube(1, ['wtr1', 'wtr0', 'wtr0', 'wtr2']),
-            new Tube(2, ['wtr0']),
-            new Tube(3, ['wtr1'])
+            new Tube(0, [0, 1, 1, 2]),
+            new Tube(1, [1, 0, 0, 2]),
+            new Tube(2, [0]),
+            new Tube(3, [1])
         ])
         const actions = state.possibleActions()
         expect(actions.length).toBe(0)
     })
-
-    // this is useless, but a similar one is actually good
-    // it('useless moves', () => {
-    //     const state = new GameState([
-    //         new Tube(0, ['wtr0', 'wtr0', 'wtr1', 'wtr2']),
-    //         new Tube(1, ['wtr1', 'wtr2', 'wtr2']),
-    //         new Tube(2, ['wtr0', 'wtr0']),
-    //         new Tube(3, ['wtr1', 'wtr1', 'wtr2'])
-    //     ])
-    //     const actions = state.possibleActions()
-    //     expect(actions).toEqual([])
-    //     expect(actions.length).toBe(0)
-    // })
 })
 
 describe('test won condition', () => {
     it('won game', () => {
         const state = new GameState([
-            new Tube(1, ['wtr1', 'wtr1', 'wtr1', 'wtr1']),
-            new Tube(2, ['wtr2', 'wtr2', 'wtr2', 'wtr2']),
+            new Tube(1, [1, 1, 1, 1]),
+            new Tube(2, [2, 2, 2, 2]),
             new Tube(3, [])
         ])
         expect(state.won).toBeTruthy()
@@ -78,8 +65,8 @@ describe('test won condition', () => {
 
     it('ongoing game', () => {
         const state = new GameState([
-            new Tube(1, ['wtr1', 'wtr1', 'wtr1', 'wtr2']),
-            new Tube(2, ['wtr2', 'wtr2', 'wtr2', 'wtr1']),
+            new Tube(1, [1, 1, 1, 2]),
+            new Tube(2, [2, 2, 2, 1]),
             new Tube(3, [])
         ])
         expect(state.won).toBeFalsy()
@@ -89,10 +76,10 @@ describe('test won condition', () => {
 
     it('lost game', () => {
         const state = new GameState([
-            new Tube(0, ['wtr0', 'wtr1', 'wtr1', 'wtr2']),
-            new Tube(1, ['wtr1', 'wtr0', 'wtr0', 'wtr2']),
-            new Tube(2, ['wtr0']),
-            new Tube(3, ['wtr1'])
+            new Tube(0, [0, 1, 1, 2]),
+            new Tube(1, [1, 0, 0, 2]),
+            new Tube(2, [0]),
+            new Tube(3, [1])
         ])
         expect(state.won).toBeFalsy()
         expect(state.lost).toBeTruthy()

@@ -15,7 +15,7 @@ function aState(value) {
     return dummy
 }
 
-function aNode(value, parent) {
+function aNode(value, parent): TreeNode {
     return new TreeNode(aState(value), parent)
 }
 

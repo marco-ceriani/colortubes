@@ -1,11 +1,13 @@
-<script>
-	export let href = null;
+<script lang="ts">
+    import { link } from "svelte-navigator";
+
+    export let href: string = null;
     export let disabled = false;
     export let spin = false;
 </script>
 
 {#if href}
-	<a class="button" {href} role="button"><slot /></a>
+	<a class="button" {href} role="button" use:link><slot /></a>
 {:else}
 	<button class="button" {disabled} class:spinning={spin} on:click>
         {#if !spin}

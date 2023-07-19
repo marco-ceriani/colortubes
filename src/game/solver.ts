@@ -1,8 +1,14 @@
-
+import type { GameState, GameMove, GameMoveRecord } from './game'
+import { GameStatus } from './game'
 
 const C_PARAM = 2 // theoretically 1.415
 
-function goodActions(state, prevAction) {
+type ExplorationResult = {
+    result: GameStatus,
+    actions: GameMoveRecord[]
+}
+
+function goodActions(state: GameState, prevAction?: GameMoveRecord): GameMove[] {
     const legalActions = state.possibleActions()
 
     return legalActions.filter(a => {
@@ -27,7 +33,16 @@ function useless(state, action) {
 }
 
 export class TreeNode {
-    constructor(state, parent, action) {
+    readonly state: GameState
+    readonly action: GameMoveRecord
+    private unevaluatedActions: GameMove[]
+
+    private parent: TreeNode
+    private children: TreeNode[]
+    private visits: number
+    private reward: number
+
+    constructor(state: GameState, parent: TreeNode, action: GameMoveRecord) {
         this.state = state
         this.action = action
         this.unevaluatedActions = goodActions(state, action)
@@ -38,15 +53,15 @@ export class TreeNode {
         this.reward = 0
     }
 
-    get isTerminalNode() {
+    get isTerminalNode(): boolean {
         return this.state.ended || (this.unevaluatedActions.length === 0 && this.children.length === 0)
     }
 
-    get fullyExpanded() {
+    get fullyExpanded(): boolean {
         return this.unevaluatedActions.length === 0
     }
 
-    bestChild() {
+    bestChild(): TreeNode | null {
         let bestValue = -Infinity
         let bestChild = null
         for (const child of this.children) {
@@ -63,12 +78,12 @@ export class TreeNode {
     }
 
     // tune the formula
-    getUpperConfidenceBound() {
+    getUpperConfidenceBound(): number {
         if (this.visits === 0) return Infinity
-        return (this.reward / this.visits) + C_PARAM * Math.sqrt( Math.log(this.parent.visits) / this.visits)
+        return (this.reward / this.visits) + C_PARAM * Math.sqrt(Math.log(this.parent.visits) / this.visits)
     }
 
-    expand() {
+    expand(): TreeNode {
         const action = this.unevaluatedActions.pop()
         const actionRecord = this.state.historyEntry(action)
         const nextState = this.state.applyMove(action)
@@ -77,7 +92,7 @@ export class TreeNode {
         return nextNode
     }
 
-    backpropagate(value) {
+    backpropagate(value: number): void {
         this.visits++
         this.reward += value
         if (this.parent) {
@@ -88,21 +103,21 @@ export class TreeNode {
 
 /**
  * Searches for a solution using the Monte Carlo Tree Search algorithm
- * @param {state} the initial state
+ * @param {GameState} state     the initial state
  */
-export function search_mcts(state) {
-    const root = new TreeNode(state, null)
-    const maxRollout = 10 + state.tubes.length * 4 
-    
-    let bestResult = undefined
+export function search_mcts(state: GameState): ExplorationResult {
+    const root = new TreeNode(state, null, null)
+    const maxRollout = 10 + state.tubes.length * 4
+
+    let bestResult: GameStatus = GameStatus.Playing
     let bestReward = -Infinity
-    let bestActions = []
+    let bestActions: GameMoveRecord[] = []
 
     const startTime = new Date().valueOf();
     let counter = 0;
 
     let elapsed = 0
-    while (elapsed < 1000 || bestResult !== 'win' && elapsed < 5000) {
+    while (elapsed < 1000 || bestResult !== GameStatus.Won && elapsed < 5000) {
         const [leaf, preActions] = traverse(root)
         const [finalState, rolloutActions] = rollout(leaf.state, maxRollout)
         const actions = preActions.concat(rolloutActions)
@@ -125,9 +140,9 @@ export function search_mcts(state) {
     }
 }
 
-function traverse(root) {
+function traverse(root: TreeNode): [TreeNode, GameMoveRecord[]] {
     let current = root
-    const actions = []
+    const actions: GameMoveRecord[] = []
     while (!current.isTerminalNode) {
         if (current.fullyExpanded) {
             current = current.bestChild()
@@ -141,12 +156,12 @@ function traverse(root) {
     return [current, actions]
 }
 
-function rolloutPolicy(moves) {
+function rolloutPolicy(moves: GameMove[]): GameMove {
     return moves[Math.floor(Math.random() * moves.length)]
 }
 
-function rollout(game, maxSteps = 20) {
-    const movesSequence = []
+function rollout(game: GameState, maxSteps = 20): [GameState, GameMoveRecord[]] {
+    const movesSequence: GameMoveRecord[] = []
     let currState = game
     for (let i = 0; !currState.ended && i < maxSteps; i++) {
         const moves = goodActions(currState)
@@ -157,7 +172,7 @@ function rollout(game, maxSteps = 20) {
     return [currState, movesSequence]
 }
 
-function evaluate(state, actionsList) {
+function evaluate(state: GameState, actionsList: GameMoveRecord[]) {
     if (state.won) {
         return 50.0 / actionsList.length
     } else if (state.lost) {

@@ -1,12 +1,15 @@
 import { moveWater, Tube } from './tube';
+import type { color } from './tube';
 import { writable } from 'svelte/store';
 
 // keep this consistent with global.css
 export const NUM_COLORS = 19
 
-export class Wheel {
-    constructor(items, weights) {
-        this.items = items
+export class Wheel<T> {
+    cumulative: number[]
+    tot: number
+
+    constructor(private items: T[], weights: number[]) {
         this.cumulative = []
         this.tot = 0
         for (let i = 0; i < items.length; i++) {
@@ -15,7 +18,7 @@ export class Wheel {
         }
     }
 
-    randomItem() {
+    randomItem(): T {
         const rnd = Math.random() * this.tot
         for (let i = 0; i < this.items.length; i++) {
             if (this.cumulative[i] > rnd) {
@@ -26,8 +29,8 @@ export class Wheel {
     }
 }
 
-function getActions(tubes) {
-    let actions = []
+function getActions(tubes: Tube[]): GameMove[] {
+    let actions: GameMove[] = []
     for (let i = 0; i < tubes.length; i++) {
         const source = tubes[i];
         if (!source.done && !source.empty) {
@@ -45,13 +48,32 @@ function getActions(tubes) {
     return actions;
 }
 
-function isGameWon(tubes) {
+function isGameWon(tubes: Tube[]) {
     return tubes.map(tube => tube.done || tube.empty)
         .reduce((a, b) => a && b, true);
 }
 
+export enum GameStatus { Playing, Won, Lost }
+
+export type GameMove = {
+    from: number,
+    to: number
+}
+
+export type GameMoveRecord = {
+    fromIndex: number;
+    toIndex: number;
+    fromId: string;
+    toId: string;
+    color: number;
+    amount: number;
+}
+
 export class GameState {
-    constructor(tubes = []) {
+    status: GameStatus
+    tubes: Tube[]
+
+    constructor(tubes: Tube[] | color[][] = []) {
         this.tubes = []
         for (const [i, t] of tubes.entries()) {
             if (t instanceof Tube) {
@@ -60,10 +82,12 @@ export class GameState {
                 this.tubes.push(new Tube(i, t))
             }
         }
+
+        this.status = GameStatus.Playing
         if (isGameWon(this.tubes)) {
-            this.status = 'win'
+            this.status = GameStatus.Won
         } else if (this.possibleActions().length === 0) {
-            this.status = 'lose'
+            this.status = GameStatus.Lost
         }
     }
 
@@ -72,22 +96,22 @@ export class GameState {
     }
 
     get won() {
-        return this.status === 'win'
+        return this.status === GameStatus.Won
     }
 
     get lost() {
-        return this.status === 'lose'
+        return this.status === GameStatus.Lost
     }
 
     get ended() {
-        return this.status !== undefined
+        return this.status !== GameStatus.Playing
     }
 
     get numClosed() {
         return this.tubes.filter(tube => tube.done).length
     }
 
-    historyEntry({ from, to }) {
+    historyEntry({ from, to }: GameMove): GameMoveRecord {
         if (this.tubes[from].topColor !== this.tubes[to].topColor && !this.tubes[to].empty) {
             throw new Error('invalid-color')
         }
@@ -102,7 +126,7 @@ export class GameState {
         }
     }
 
-    applyMove({ from, to }) {
+    applyMove({ from, to }: GameMove): GameState {
         const [newSourceTube, newDestTube] = moveWater(this.tubes[from], this.tubes[to]);
         const newTubes = [...this.tubes]
         newTubes[from] = newSourceTube
@@ -110,7 +134,7 @@ export class GameState {
         return new GameState(newTubes);
     }
 
-    add(color, to) {
+    add(color: color, to: number) {
         const newTubes = [...this.tubes]
         newTubes[to] = this.tubes[to].add(color)
         return new GameState(newTubes);
@@ -125,28 +149,30 @@ export class GameState {
     }
 }
 
-function randomItem(array) {
+function randomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)]
 }
 
-function shuffleArray(array) {
+function shuffleArray(array: any[]): void {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
-function randomColors(size) {
-    const allColors = Array(NUM_COLORS).fill().map((_, i) => i + 1)
+function randomColors(size: number): color[] {
+    const allColors = Array(NUM_COLORS).fill(null).map((_, i) => i + 1)
     shuffleArray(allColors)
     return allColors.slice(0, size)
 }
 
-export function randomGame(numTubes) {
-    numTubes = numTubes || 10 + Math.floor(Math.random() * 6)
+export function randomGame(numTubes: number = 0): GameState {
+    if (numTubes == 0) {
+        numTubes = 10 + Math.floor(Math.random() * 6)
+    }
     const colors = randomColors(numTubes - 2)
 
-    const tubes = new Array(numTubes - 2).fill()
+    const tubes = new Array(numTubes - 2).fill(null)
         .map((_, i) => new Array(4)
             .fill(colors[i])).concat([[], []])
 
@@ -185,5 +211,5 @@ export function randomGame(numTubes) {
     return new GameState(game.tubes)
 }
 
-export const currentGame = writable(randomGame())
+export const currentGame = writable<GameState>(randomGame())
 

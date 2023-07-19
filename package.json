@@ -14,17 +14,20 @@
 	"devDependencies": {
 		"@sveltejs/vite-plugin-svelte": "^2.0.4",
 		"@tsconfig/svelte": "^4.0.1",
-		"svelte": "^3.58.0",
-		"svelte-check": "^3.3.1",
-		"tslib": "^2.5.0",
-		"typescript": "^5.0.2",
-		"vite": "^4.3.9",
-		"vitest": "^0.28.5",
 		"eslint": "^8.34.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"gh-pages": "^5.0.0",
 		"prettier": "^2.8.4",
-		"prettier-plugin-svelte": "^2.8.1"
+		"prettier-plugin-svelte": "^2.8.1",
+		"svelte": "^3.58.0",
+		"svelte-check": "^3.3.1",
+		"tslib": "^2.5.0",
+		"typescript": "^5.0.2",
+		"vite": "^4.3.9",
+		"vitest": "^0.28.5"
+	},
+	"dependencies": {
+		"svelte-navigator": "^3.2.2"
 	}
 }

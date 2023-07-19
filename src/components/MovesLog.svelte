@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
+    import type { GameMoveRecord } from "../game/game"
+
     export let title = 'Moves'
-    export let moves = [];
+    export let moves: GameMoveRecord[] = [];
 </script>
 
 <div class="log">

@@ -1,15 +1,17 @@
-<script>
+<script lang="ts">
+	import type { Tube } from "../game/tube"
+
 	import { fly } from 'svelte/transition';
 	import { linear } from 'svelte/easing';
-	export let tube;
+	export let tube: Tube;
 	export let selected = false;
 	export let highlight = false;
-	export let selectable;
+	export let selectable: boolean;
 </script>
 
 <div class="tube-slot">
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div class="tube" class:selected class:highlight {selectable} class:unplugged={!tube.done} on:click>
+	<div class="tube" class:selected class:highlight data-selectable={selectable} class:unplugged={!tube.done} on:click>
 		<div class="plug" />
 		{#each tube.levels as level}
 			<div
@@ -33,7 +35,7 @@
 		border-radius: 0% 0% 100vw 100vw;
 		overflow: hidden;
 	}
-	.tube.unplugged[selectable='true']:hover {
+	.tube.unplugged[data-selectable='true']:hover {
 		box-shadow: 0px 0px 6px 4px hsl(66.6, 100%, 75%);
 	}
 	.selected {

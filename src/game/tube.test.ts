@@ -57,10 +57,6 @@ describe("tube status", () => {
     })
 })
 
-/*describe('moving water', () => {
-
-})*/
-
 describe('test accepts color', () => {
     it ('empty tubes accept anything', () => {
         const tube = new Tube(0)
@@ -79,7 +75,21 @@ describe('test accepts color', () => {
         expect(tube.accepts(1)).toBeFalsy()
         expect(tube.accepts(0)).toBeTruthy()
         expect(tube.accepts(0)).toBe(3)
-        tube.levels = [0, 0]
-        expect(tube.accepts(0)).toBe(2)
+        const tube2 = new Tube(0, [0, 0])
+        expect(tube2.accepts(0)).toBe(2)
+    })
+})
+
+describe('add water to tube', () => {
+    it ('cannot add to full tube', () => {
+        const tube = new Tube(0, [0, 1, 2, 3])
+        expect(() => tube.add(0)).toThrowError()
+    })
+
+    it('add one item to empty tube', () => {
+        const tube = new Tube(0)
+        const newTube = tube.add(4)
+        expect(newTube.topColor).toBe(4)
+        expect(newTube.emptySpace).toBe(3)
     })
 })

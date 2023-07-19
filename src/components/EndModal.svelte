@@ -1,12 +1,15 @@
-<script>
+<script lang="ts">
     import {fade} from 'svelte/transition'
 
-    export let result
+    export let result: boolean
 
-    $: message = result === "win" ? "🏅 You Win 🏅" : "You lose 😞"
+    let cssClass: string = "";
+
+    $: message = result ? "🏅 You Win 🏅" : "You lose 😞"
+    $: cssClass = result ? "win" : "lose"
 </script>
 
-<div class="modal {result || ''}" transition:fade={{delay: 100}}>
+<div class="modal {cssClass}" transition:fade={{delay: 100}}>
     <h2>{message}</h2>
 </div>
 

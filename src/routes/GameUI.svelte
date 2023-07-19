@@ -1,37 +1,21 @@
-<script>
-	import { onMount } from 'svelte';
-    import { base } from '$app/paths';
-    import Button from '$lib/components/Button.svelte';
-    import ButtonsBar from '$lib/components/ButtonsBar.svelte';
-	import Tubes from '$lib/components/TubesContainer.svelte';
-	import EndModal from '$lib/components/EndModal.svelte';
-	import { currentGame, randomGame } from '$lib/game/game.js';
+<script lang="ts">
+	import ButtonsBar from '../components/ButtonsBar.svelte'
+    import Button from '../components/Button.svelte'
+    import TubesContainer from '../components/TubesContainer.svelte'
+    import EndModal from '../components/EndModal.svelte';
 
-    import Solver from '$lib/solve-worker?worker'
-	let solverWorker = undefined;
-    let solving = false;
+    import { GameState, GameStatus, currentGame, randomGame } from '../game/game.js';
+    import type { GameMoveRecord } from "../game/game.js"
 
-	let game = $currentGame;
-    let selected = null;
-    let selectable;
-	let moves = [];
-    
-    let solution = [];
-    let highlight = null;
+    let solverWorker = undefined;
+    let solving: boolean = false;
 
-	onMount(async () => {
-        solverWorker = new Solver()
-        solverWorker.onmessage = function(evt) {
-            if ('win' === evt.data.result) {
-                solution = evt.data.actions
-                console.debug(solution)
-            }
-            solving = false;
-        }
+    let game: GameState = $currentGame;
+    let selected: number;
+    let moves: GameMoveRecord[] = [];
 
-	});
-
-    $: selectable = selected ? 'non-full' : 'non-empty';
+    let solution: GameMoveRecord[] = [];
+    let highlight: number = null;
 
     function newGame() {
         console.debug('generating new game')
@@ -42,21 +26,19 @@
         highlight = null
     }
 
-	function reset() {
-		game = $currentGame;
-        selected = null;
-		moves = [];
-        solution = [];
-        highlight = null;
-	}
+    function reset() {
+		game = $currentGame
+        selected = null
+		moves = []
+        solution = []
+        highlight = null
+    }
 
-	function solve() {
-		solverWorker.postMessage(game);
-        solving = true;
-	}
+    function solve() {
+    }
 
-    function selectTube(evt) {
-        const newIndex = evt.detail
+    function selectTube(evt: CustomEvent<number>) {
+        const newIndex: number = evt.detail;
         if (selected === null) {
             selected = newIndex
             console.debug(`selecting ${selected}`)
@@ -78,7 +60,7 @@
         }
     }
 
-	function moveWater(from, to) {
+    function moveWater(from: number, to: number) {
 		try {
 			const historyEntry = game.historyEntry({ from, to });
 			game = game.applyMove({ from, to });
@@ -87,7 +69,7 @@
 		} catch (error) {
 			console.log(error.message);
 		}
-	}
+    }
 
     function hint() {
         if (solution.length > 0) {
@@ -100,7 +82,7 @@
 
 <ButtonsBar>
     <Button on:click={newGame}>New</Button>
-    <Button href="{base}/edit">Custom</Button>
+    <Button href="/edit">Custom</Button>
     <Button on:click={reset}>Reset</Button>
     {#if solverWorker && solution.length == 0}
         <Button on:click={solve} spin={solving}>Solve</Button>
@@ -111,12 +93,11 @@
 </ButtonsBar>
 
 <div class="cols-2">
-	<Tubes tubes={game.tubes} {selected} {selectable} {highlight} on:select={selectTube} />
+    <TubesContainer tubes={game.tubes} {selected} on:select={selectTube} />
 </div>
 
-
-{#if game.status}
-	<EndModal result={game.status} />
+{#if game.ended}
+	<EndModal result={game.status == GameStatus.Won} />
 {/if}
 
 <style>

@@ -1,5 +1,5 @@
 
-export function amountMovable(from, to) {
+export function amountMovable(from: Tube, to: Tube) {
     if (from.empty) {
         return 0;
     }
@@ -9,7 +9,7 @@ export function amountMovable(from, to) {
     return 0;
 }
 
-export function moveWater(from, to) {
+export function moveWater(from: Tube, to: Tube) {
     if (from.empty) {
         throw Error(`source-empty ${from.name}`);
     }
@@ -21,7 +21,7 @@ export function moveWater(from, to) {
     }
 
     const color = from.topColor;
-    if (to.length > 0 && color !== to.topColor) {
+    if (!to.empty && color !== to.topColor) {
         throw Error('invalid-color');
     }
 
@@ -32,15 +32,10 @@ export function moveWater(from, to) {
     return [new Tube(from.id, first), new Tube(to.id, second)];
 }
 
-export function isGameWon(tubes) {
-    return tubes.map(tube => tube.done || tube.length === 0)
-        .reduce((a, b) => a && b, true);
-}
+export type color = number;
 
 export class Tube {
-    constructor(id, levels = []) {
-        this.id = id
-        this.levels = levels
+    constructor(readonly id: number, public levels: color[] = []) {
     }
 
     get name() {
@@ -93,7 +88,7 @@ export class Tube {
         return this.topAmount === this.levels.length
     }
 
-    accepts(color) {
+    accepts(color: color) {
         if (this.empty) {
             return 4;
         }
@@ -107,10 +102,11 @@ export class Tube {
         }
     }
 
-    add(color) {
-        if (!this.full) {
-            return new Tube(this.id, [...this.levels, color])
+    add(color: color): Tube {
+        if (this.full) {
+            throw Error(`tube-full ${this.name}`);
         }
+        return new Tube(this.id, [...this.levels, color])
     }
 }
 
