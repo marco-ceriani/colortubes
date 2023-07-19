@@ -10,7 +10,7 @@
 	</header>
 
 	<main>
-		<Router>
+		<Router basepath={import.meta.env.BASE_URL}>
 			<Route path="/">
 				<GameUI />
 			</Route>
