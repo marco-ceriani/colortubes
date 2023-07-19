@@ -1,14 +1,15 @@
-<script>
+<script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { NUM_COLORS } from '$lib/game/game.js';
-    const dispatch = createEventDispatcher();
+    import { NUM_COLORS } from '../game/game.js';
 
-    export let counts = {}
+    const dispatch = createEventDispatcher<{'color-pick': number}>();
+
+    export let counts: {[key: number]: number} = {}
     
-    const colors = Array(NUM_COLORS).fill().map((_, i) => i + 1)
-    let selected = null
+    const colors = Array(NUM_COLORS).fill(null).map((_, i) => i + 1)
+    let selected: number = null
 
-    function selectColor(color) {
+    function selectColor(color: number) {
         selected = color
         dispatch('color-pick', color)
     }

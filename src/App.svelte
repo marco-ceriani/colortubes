@@ -1,6 +1,7 @@
-<script>
-    export const prerender = true;
-    export const trailingSlash = 'always';
+<script lang="ts">
+	import { Router, Link, Route } from "svelte-navigator"
+	import GameUI from "./routes/GameUI.svelte"
+	import EditPage from "./routes/EditPage.svelte"
 </script>
 
 <div class="root-container">
@@ -9,7 +10,14 @@
 	</header>
 
 	<main>
-		<slot />
+		<Router>
+			<Route path="/">
+				<GameUI />
+			</Route>
+			<Route path="/edit">
+				<EditPage />
+			</Route>
+		</Router>
 	</main>
 </div>
 

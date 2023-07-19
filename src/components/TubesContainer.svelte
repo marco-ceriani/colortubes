@@ -1,19 +1,20 @@
-<script>
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import Tube from './Tube.svelte';
-    import { distributeOnRows } from '$lib/components/tubesLayout.js';
+	import TubeComponent from './Tube.svelte';
+	import type { Tube } from '../game/tube';
+	import { distributeOnRows } from './tubesLayout';
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{select: number}>();
 
-	export let tubes;
-	export let selected = null;
-	export let highlight = null;
+	export let tubes: Tube[];
+	export let selected: number = null;
+	export let highlight: number = null;
 
-	let rows = [];
+	let rows: Tube[][] = [];
 
 	$: rows = distributeOnRows(tubes);
 
-	function isSelectable(id) {
+	function isSelectable(id: number) {
 		if (selected === id) {
 			return true;
 		}
@@ -29,8 +30,8 @@
 		return true;
 	}
 
-	function selectTube(id) {
-		if (isSelectable(id, selected)) {
+	function selectTube(id: number) {
+		if (isSelectable(id)) {
 			dispatch('select', id);
 		}
 	}
@@ -40,10 +41,10 @@
 	{#each rows as row}
 		<div class="tubes-row">
 			{#each row as tube}
-				<Tube
+				<TubeComponent
 					{tube}
 					selected={selected === tube.id}
-					selectable={isSelectable(tube.id, selected)}
+					selectable={isSelectable(tube.id)}
 					highlight={highlight === tube.id}
 					on:click={() => selectTube(tube.id)}
 				/>
@@ -53,9 +54,9 @@
 </div>
 
 <style>
-    .tubes-row {
-        display: flex;
-        justify-content: space-around;
-        margin-block: 3rem;
-    }
+	.tubes-row {
+		display: flex;
+		justify-content: space-around;
+		margin-block: 3rem;
+	}
 </style>
