@@ -9,7 +9,7 @@
 		"preview": "vite preview",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"test:unit": "vitest",
-		"deploy": "touch build/.nojekyll && gh-pages -d build -t true"
+		"deploy": "touch dist/.nojekyll && gh-pages -d dist -t true"
 	},
 	"devDependencies": {
 		"@sveltejs/vite-plugin-svelte": "^2.0.4",
