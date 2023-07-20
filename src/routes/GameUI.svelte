@@ -5,6 +5,7 @@
     import Button from "../components/Button.svelte";
     import TubesContainer from "../components/TubesContainer.svelte";
     import EndModal from "../components/EndModal.svelte";
+    import type { TubeClick } from "../components/events"
 
     import {
         GameState,
@@ -20,11 +21,14 @@
     let solving: boolean = false;
 
     let game: GameState = $currentGame;
-    let selected: number;
+    let selected: number = null;
     let moves: GameMoveRecord[] = [];
+    let tubesEnabled: boolean[] = [];
 
     let solution: GameMoveRecord[] = [];
     let highlight: number = null;
+
+    newGame();
 
     onMount(async () => {
         console.log('initializing web worker')
@@ -41,18 +45,16 @@
     function newGame() {
         console.debug("generating new game");
         currentGame.set(randomGame());
-        game = $currentGame;
-        moves = [];
-        solution = [];
-        highlight = null;
+        reset();
     }
 
     function reset() {
         game = $currentGame;
         selected = null;
+        highlight = null;
         moves = [];
         solution = [];
-        highlight = null;
+        updateSelectableState()
     }
 
     function solve() {
@@ -60,13 +62,34 @@
         solving = true;
     }
 
-    function selectTube(evt: CustomEvent<number>) {
-        const newIndex: number = evt.detail;
+    function isSelectable(id: number) {
+		if (selected === id) {
+			return true;
+		}
+		if (game.tubes[id].done) {
+			return false;
+		}
+		if (selected === null && game.tubes[id].empty) {
+			return false;
+		}
+		if (selected !== null && game.tubes[id].full) {
+			return false;
+		}
+		return true;
+	}
+
+    function selectTube(evt: CustomEvent<TubeClick>) {
+        console.log(`clicked ${JSON.stringify(evt.detail)}`)
+        const tubeClick = evt.detail;
+        if (!isSelectable(tubeClick.tubeId))
+            return
+
+        const newIndex: number = tubeClick.tubeId;
         if (selected === null) {
             selected = newIndex;
-            console.debug(`selecting ${selected}`);
+            console.debug(`selecting tube ${selected}`);
         } else if (selected === newIndex) {
-            console.debug(`deselecting ${selected}`);
+            console.debug(`deselecting tube ${selected}`);
             selected = null;
         } else {
             moveWater(selected, newIndex);
@@ -84,13 +107,18 @@
             selected = null;
             highlight = null;
         }
+        updateSelectableState()
+    }
+
+    function updateSelectableState() {
+        tubesEnabled = game.tubes.map(tube => isSelectable(tube.id))
     }
 
     function moveWater(from: number, to: number) {
         try {
             const historyEntry = game.historyEntry({ from, to });
             game = game.applyMove({ from, to });
-            console.debug(`applied move ${JSON.stringify(historyEntry)}`);
+            console.info(`applied move ${JSON.stringify(historyEntry)}`);
             moves = [...moves, historyEntry];
         } catch (error) {
             console.log(error.message);
@@ -118,7 +146,7 @@
 </ButtonsBar>
 
 <div class="cols-2">
-    <TubesContainer tubes={game.tubes} {selected} {highlight} on:select={selectTube} />
+    <TubesContainer tubes={game.tubes} selectedId={selected} highlightId={highlight} enabled={tubesEnabled} on:tube-click={selectTube} />
 </div>
 
 {#if game.ended}
