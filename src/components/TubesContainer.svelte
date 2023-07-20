@@ -26,6 +26,7 @@
 					selectable={enabled[tube.id]}
 					highlight={highlightId === tube.id}
 					on:tube-click
+					on:tube-drag
 				/>
 			{/each}
 		</div>

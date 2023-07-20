@@ -5,7 +5,7 @@
     import Button from "../components/Button.svelte";
     import TubesContainer from "../components/TubesContainer.svelte";
     import EndModal from "../components/EndModal.svelte";
-    import type { TubeClick } from "../components/events"
+    import type { TubeClick, TubeDragDrop } from "../components/events"
 
     import {
         GameState,
@@ -108,6 +108,11 @@
         updateSelectableState()
     }
 
+    function onTubeDnD(evt: CustomEvent<TubeDragDrop>) {
+        const { sourceTubeId, targetTubeId } = evt.detail
+        moveWater(sourceTubeId, targetTubeId)
+    }
+
     function updateSelectableState() {
         tubesEnabled = game.tubes.map(tube => isSelectable(tube.id))
     }
@@ -144,7 +149,8 @@
 </ButtonsBar>
 
 <div class="cols-2">
-    <TubesContainer tubes={game.tubes} selectedId={selected} highlightId={highlight} enabled={tubesEnabled} on:tube-click={selectTube} />
+    <TubesContainer tubes={game.tubes} selectedId={selected} highlightId={highlight} enabled={tubesEnabled}
+        on:tube-click={selectTube} on:tube-drag={onTubeDnD}/>
 </div>
 
 {#if game.ended}

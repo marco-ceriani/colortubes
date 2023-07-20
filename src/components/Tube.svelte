@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Tube } from "../game/tube";
-	import type { TubeClick } from "./events";
+	import type { TubeClick, TubeDragDrop } from "./events";
 
 	import { fly } from "svelte/transition";
 	import { linear } from "svelte/easing";
@@ -11,14 +11,52 @@
 	export let highlight = false;
 	export let selectable: boolean;
 
-	const dispatchClick = createEventDispatcher<{ "tube-click": TubeClick }>();
+	const dispatchAction = createEventDispatcher<{ "tube-click": TubeClick, "tube-drag": TubeDragDrop }>();
 
 	const onClick = (level: number) => {
-		dispatchClick("tube-click", {
+		dispatchAction("tube-click", {
 			tubeId: tube.id,
 			level: level,
 		});
 	};
+
+	/* Drag & Drop */
+
+	const DRAG_DATA_TYPE = "game/tube"
+
+	const dragStartHandler = (evt: DragEvent) => {
+		evt.dataTransfer.setData(DRAG_DATA_TYPE, tube.id.toString())
+	}
+
+	const dropHanlder = (evt: DragEvent) => {
+		const sourceId = +evt.dataTransfer.getData(DRAG_DATA_TYPE)
+		const targetId = tube.id
+		dispatchAction("tube-drag", {
+			sourceTubeId: sourceId, 
+			targetTubeId: targetId
+		})
+		evt.preventDefault()
+	}
+
+	const dragEnter = (evt: DragEvent) => {
+		if (evt.dataTransfer.types.includes(DRAG_DATA_TYPE)) {
+			evt.preventDefault()
+
+		}
+	}
+
+	const dragOver = (evt: DragEvent) => {
+		if (evt.dataTransfer.types.includes(DRAG_DATA_TYPE)) {
+			evt.preventDefault()
+		}
+	}
+
+	const dragLeave = (evt: DragEvent) => {
+		if (evt.dataTransfer.types.includes(DRAG_DATA_TYPE)) {
+			evt.preventDefault()
+		}
+	}
+
 </script>
 
 <div class="tube-slot">
@@ -29,6 +67,11 @@
 		class:highlight
 		data-selectable={selectable}
 		class:unplugged={!tube.done}
+		draggable="true"
+		on:dragstart={dragStartHandler}
+		on:dragenter={dragEnter}
+		on:dragover={dragOver}
+		on:drop={dropHanlder}
 	>
 		<div class="plug" />
 		{#each { length: 4 } as _, index}
