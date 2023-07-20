@@ -28,8 +28,6 @@
     let solution: GameMoveRecord[] = [];
     let highlight: number = null;
 
-    newGame();
-
     onMount(async () => {
         console.log('initializing web worker')
         solverWorker = new Solver()

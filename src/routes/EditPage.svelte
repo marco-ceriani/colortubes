@@ -2,6 +2,8 @@
 	import Button from '../components/Button.svelte';
 	import ButtonsBar from '../components/ButtonsBar.svelte';
 	import ColorPicker from '../components/ColorPicker.svelte';
+	import TubesContainer from "../components/TubesContainer.svelte"
+	import type { TubeClick } from "../components/events"
 
 	import { Tube } from '../game/tube';
 	import type { color } from '../game/tube';
@@ -13,6 +15,7 @@
     type ColorUsageCount = {[key: number]: number}
 
 	let game: GameState = $currentGame;
+	let tubesEnabled: boolean[] = [];
 	let tubeRows = [game.tubes];
 	let currentColor: color = null;
 	let colorCounts: ColorUsageCount = {};
@@ -34,12 +37,13 @@
 		const target = evt.target as HTMLInputElement;
 		const newSize: number = +target.value;
 		if (newSize < game.tubes.length) {
-			game.tubes = game.tubes.slice(0, newSize);
+			game = new GameState(game.tubes.slice(0, newSize));
 		}
 		if (newSize > game.tubes.length) {
 			const inc = newSize - game.tubes.length;
-			game.tubes = [...game.tubes, ...newTubes(inc, game.tubes.length)];
+			game = new GameState([...game.tubes, ...newTubes(inc, game.tubes.length)]);
 		}
+		tubesEnabled = game.tubes.map(t => true);
 	}
 
 	function reset() {
@@ -80,6 +84,11 @@
         game.tubes = newTubes;
     }
 
+	function onTubeClick(e: CustomEvent<TubeClick>) {
+		let data: TubeClick = e.detail
+		applyColor(data.tubeId, data.level)
+	}
+
     function count(tubes: Tube[]) {
 		const byColor: ColorUsageCount = {};
 		for (const tube of tubes) {
@@ -91,24 +100,13 @@
 		}
 		return byColor;
 	}
-    
-	function blockCssClass(tube: Tube, level: number): string {
-		const blockColor: number = tube.levels[level];
-		if (blockColor > 0) {
-			return '--clr-wtr' + blockColor;
-		}
-		return '--clr-none';
-	}
 
     function isPlayable(counts: ColorUsageCount): boolean {
-        console.debug('is playable?')
-        console.debug(counts)
         const distinctCounts = new Set(Object.values(counts))
-        console.debug(distinctCounts)
         return distinctCounts.size === 1 && distinctCounts.has(4)
     }
 
-	function doPlay() {
+	function startPlay() {
         if (playable) {
             const newGame = new GameState(removeEmpty(game.tubes))
             currentGame.set(newGame);
@@ -125,7 +123,7 @@
 <ButtonsBar>
 	<Button on:click={reset}>Reset</Button>
 	<Button href="/">Discard</Button>
-	<Button on:click={doPlay} disabled={!playable}>Play</Button>
+	<Button on:click={startPlay} disabled={!playable}>Play</Button>
 </ButtonsBar>
 
 <div>
@@ -142,43 +140,10 @@
 
 <ColorPicker on:color-pick={pickColor} counts={colorCounts} />
 
-<div>
-	{#each tubeRows as row}
-		<div class="tubes-row">
-			{#each row as tube}
-				<div class="tube">
-					{#each Array(4) as _, lvl}
-						<!--{#each tube.levels as clr, lvl}-->
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<div
-							class="block"
-							on:click={() => applyColor(tube.id, lvl)}
-							style:background-color="var({blockCssClass(tube, lvl)})"
-						/>
-					{/each}
-				</div>
-			{/each}
-		</div>
-	{/each}
-</div>
+<TubesContainer tubes={game.tubes} enabled={tubesEnabled} on:tube-click={onTubeClick}/>
 
 <style>
 	input[type='number'] {
 		max-width: 6ch;
-	}
-	.tubes-row {
-		display: flex;
-		justify-content: space-around;
-		margin-block: 3rem;
-	}
-	.tube {
-		display: inline-flex;
-		flex-direction: column-reverse;
-		width: 3rem;
-		border: 1px solid white;
-	}
-
-	.block {
-		height: 3rem;
 	}
 </style>

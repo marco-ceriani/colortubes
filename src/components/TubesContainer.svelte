@@ -5,9 +5,6 @@
 	
 	import type{ TubeClick } from './events'
 	import type { Tube } from '../game/tube';
-
-	const dispatch = createEventDispatcher<{select: TubeClick}>();
-
 	export let tubes: Tube[];
 	export let enabled: boolean[];
 	export let selectedId: number = null;
@@ -17,16 +14,12 @@
 
 	$: rows = distributeOnRows(tubes);
 
-	function selectTube(evt: CustomEvent<TubeClick>) {
-		const click = evt.detail
-		dispatch('select', click);
-	}
 </script>
 
 <div class="tubes-container">
 	{#each rows as row}
 		<div class="tubes-row">
-			{#each row as tube}
+			{#each row as tube (tube.id)}
 				<TubeComponent
 					{tube}
 					selected={selectedId === tube.id}

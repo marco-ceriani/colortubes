@@ -58,7 +58,8 @@ export class Tube {
         return this.levels.length === 4 &&
             this.levels[0] === this.levels[1] &&
             this.levels[1] === this.levels[2] &&
-            this.levels[2] == this.levels[3];
+            this.levels[2] == this.levels[3] &&
+            this.levels[3] > 0;
     }
 
     get topColor() {
