@@ -3,6 +3,7 @@
 	import ButtonsBar from '../components/ButtonsBar.svelte';
 	import ColorPicker from '../components/ColorPicker.svelte';
 	import TubesContainer from "../components/TubesContainer.svelte"
+	import PageFocus from "../components/PageFocus.svelte"
 	import type { TubeClick } from "../components/events"
 
 	import { Tube } from '../game/tube';
@@ -119,6 +120,8 @@
     $: playable = isPlayable(colorCounts)
 
 </script>
+
+<PageFocus />
 
 <ButtonsBar>
 	<Button on:click={reset}>Reset</Button>

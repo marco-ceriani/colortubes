@@ -5,6 +5,7 @@
     import Button from "../components/Button.svelte";
     import TubesContainer from "../components/TubesContainer.svelte";
     import EndModal from "../components/EndModal.svelte";
+    import PageFocus from "../components/PageFocus.svelte"
     import type { TubeClick, TubeDragDrop } from "../components/events"
 
     import {
@@ -135,6 +136,8 @@
         }
     }
 </script>
+
+<PageFocus />
 
 <ButtonsBar>
     <Button on:click={newGame}>New</Button>
