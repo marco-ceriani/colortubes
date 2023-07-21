@@ -6,7 +6,7 @@
     import TubesContainer from "../components/TubesContainer.svelte";
     import EndModal from "../components/EndModal.svelte";
     import PageFocus from "../components/PageFocus.svelte"
-    import type { TubeClick, TubeDragDrop } from "../components/events"
+    import type { TubeClick, TubeDrag, TubeDragDrop } from "../components/events"
 
     import {
         GameState,
@@ -77,7 +77,7 @@
 		return true;
 	}
 
-    function selectTube(evt: CustomEvent<TubeClick>) {
+    function onTubeClick(evt: CustomEvent<TubeClick>) {
         console.log(`clicked ${JSON.stringify(evt.detail)}`)
         const tubeClick = evt.detail;
         if (!isSelectable(tubeClick.tubeId))
@@ -85,33 +85,29 @@
 
         const newIndex: number = tubeClick.tubeId;
         if (selected === null) {
-            selected = newIndex;
-            console.debug(`selecting tube ${selected}`);
+            selectTube(newIndex)
         } else if (selected === newIndex) {
             console.debug(`deselecting tube ${selected}`);
             selected = null;
         } else {
             moveWater(selected, newIndex);
-            if (solution.length > 0) {
-                const suggestion = solution[0];
-                if (
-                    newIndex === suggestion.toIndex &&
-                    selected === suggestion.fromIndex
-                ) {
-                    solution = solution.slice(1);
-                } else {
-                    solution = [];
-                }
-            }
+            updateAutoSolution(newIndex)
             selected = null;
             highlight = null;
         }
         updateSelectableState()
     }
 
+    function selectTube(newIndex: number) {
+        selected = newIndex;
+        console.debug(`selecting tube ${selected}`);
+    }
+
     function onTubeDnD(evt: CustomEvent<TubeDragDrop>) {
         const { sourceTubeId, targetTubeId } = evt.detail
         moveWater(sourceTubeId, targetTubeId)
+        selected = null
+        updateSelectableState()
     }
 
     function updateSelectableState() {
@@ -125,7 +121,21 @@
             console.info(`applied move ${JSON.stringify(historyEntry)}`);
             moves = [...moves, historyEntry];
         } catch (error) {
-            console.log(error.message);
+            console.warn(error.message);
+        }
+    }
+
+    function updateAutoSolution(newIndex: number) {
+        if (solution.length > 0) {
+            const suggestion = solution[0];
+            if (
+                newIndex === suggestion.toIndex &&
+                selected === suggestion.fromIndex
+            ) {
+                solution = solution.slice(1);
+            } else {
+                solution = [];
+            }
         }
     }
 
@@ -153,7 +163,7 @@
 
 <div class="cols-2">
     <TubesContainer tubes={game.tubes} selectedId={selected} highlightId={highlight} enabled={tubesEnabled}
-        on:tube-click={selectTube} on:tube-drag={onTubeDnD}/>
+        on:tube-click={onTubeClick} on:tube-drag={evt => selectTube(evt.detail.tubeId)} on:tube-drop={onTubeDnD}/>
 </div>
 
 {#if game.ended}

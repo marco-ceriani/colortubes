@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Tube } from "../game/tube";
-	import type { TubeClick, TubeDragDrop } from "./events";
+	import type { TubeClick, TubeDrag, TubeDragDrop } from "./events";
 
 	import { fly } from "svelte/transition";
 	import { linear } from "svelte/easing";
@@ -10,8 +10,13 @@
 	export let selected = false;
 	export let highlight = false;
 	export let selectable: boolean;
+	let dropping = false;
 
-	const dispatchAction = createEventDispatcher<{ "tube-click": TubeClick, "tube-drag": TubeDragDrop }>();
+	const dispatchAction = createEventDispatcher<{ 
+		"tube-click": TubeClick,
+		"tube-drop": TubeDragDrop,
+		"tube-drag": TubeDrag
+	}>();
 
 	const onClick = (level: number) => {
 		dispatchAction("tube-click", {
@@ -26,12 +31,14 @@
 
 	const dragStartHandler = (evt: DragEvent) => {
 		evt.dataTransfer.setData(DRAG_DATA_TYPE, tube.id.toString())
+		dispatchAction("tube-drag", {tubeId: tube.id})
 	}
 
 	const dropHanlder = (evt: DragEvent) => {
+		dropping = false
 		const sourceId = +evt.dataTransfer.getData(DRAG_DATA_TYPE)
 		const targetId = tube.id
-		dispatchAction("tube-drag", {
+		dispatchAction("tube-drop", {
 			sourceTubeId: sourceId, 
 			targetTubeId: targetId
 		})
@@ -41,7 +48,9 @@
 	const dragEnter = (evt: DragEvent) => {
 		if (evt.dataTransfer.types.includes(DRAG_DATA_TYPE)) {
 			evt.preventDefault()
-
+			if (selectable) {
+				dropping = true
+			}
 		}
 	}
 
@@ -53,6 +62,7 @@
 
 	const dragLeave = (evt: DragEvent) => {
 		if (evt.dataTransfer.types.includes(DRAG_DATA_TYPE)) {
+			dropping = false
 			evt.preventDefault()
 		}
 	}
@@ -66,11 +76,13 @@
 		class:selected
 		class:highlight
 		data-selectable={selectable}
+		class:dropping={dropping}
 		class:unplugged={!tube.done}
 		draggable="true"
 		on:dragstart={dragStartHandler}
 		on:dragenter={dragEnter}
 		on:dragover={dragOver}
+		on:dragleave={dragLeave}
 		on:drop={dropHanlder}
 	>
 		<div class="plug" />
@@ -123,7 +135,8 @@
 		border-radius: 0% 0% 100vw 100vw;
 		overflow: hidden;
 	}
-	.tube.unplugged[data-selectable="true"]:hover {
+	.tube.unplugged[data-selectable="true"]:hover,
+	.tube.unplugged[data-selectable="true"].dropping {
 		box-shadow: 0px 0px 6px 4px hsl(66.6, 100%, 75%);
 	}
 	.selected {

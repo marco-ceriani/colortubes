@@ -27,6 +27,7 @@
 					highlight={highlightId === tube.id}
 					on:tube-click
 					on:tube-drag
+					on:tube-drop
 				/>
 			{/each}
 		</div>
