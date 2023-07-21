@@ -79,11 +79,10 @@
 
     function onTubeClick(evt: CustomEvent<TubeClick>) {
         console.log(`clicked ${JSON.stringify(evt.detail)}`)
-        const tubeClick = evt.detail;
-        if (!isSelectable(tubeClick.tubeId))
+        const newIndex: number = evt.detail.tubeId;
+        if (!isSelectable(newIndex))
             return
 
-        const newIndex: number = tubeClick.tubeId;
         if (selected === null) {
             selectTube(newIndex)
         } else if (selected === newIndex) {
@@ -105,8 +104,17 @@
 
     function onTubeDnD(evt: CustomEvent<TubeDragDrop>) {
         const { sourceTubeId, targetTubeId } = evt.detail
-        moveWater(sourceTubeId, targetTubeId)
-        selected = null
+        if (!isSelectable(targetTubeId))
+            return
+
+        if (selected === targetTubeId) {
+            console.debug(`deselecting tube ${selected}`);
+            selected = null;
+        } else {
+            moveWater(sourceTubeId, targetTubeId)
+            updateAutoSolution(targetTubeId)
+            selected = null
+        }
         updateSelectableState()
     }
 
