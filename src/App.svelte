@@ -24,11 +24,11 @@
 <style>
 	header {
 		text-align: center;
-		font-size: clamp(1rem, 3.5vw, 1.25rem);
+		font-size: clamp(1rem, 3vw, 1.5rem);
 		margin-block: 0.75rem;
 	}
 	h1 {
-		background: linear-gradient(180deg, var(--clr-accent) 50%, var(--clr-accent2) 75%);
+		background: linear-gradient(180deg, var(--clr-accent) 40%, var(--clr-accent2) 70%);
         background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;

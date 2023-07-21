@@ -126,7 +126,7 @@
 
 <style>
 	.tube {
-		width: clamp(2.5rem, 6vw, 3rem);
+		width: clamp(2.25rem, 6vw, 3rem);
 		height: 12rem;
 		margin-inline: auto;
 		display: flex;
@@ -154,7 +154,8 @@
 		order: 99;
 		height: 0.75rem;
 		width: 3rem;
-		background-color: #604e42;
+		background-color: #8F3511;
+		border-bottom: 0.15rem solid #532411;
 	}
 	.unplugged .plug {
 		visibility: hidden;
