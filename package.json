@@ -16,11 +16,11 @@
 		"@tsconfig/svelte": "^4.0.1",
 		"gh-pages": "^5.0.0",
 		"svelte": "^3.58.0",
-		"svelte-check": "^3.3.1",
+		"svelte-check": "^3.6.0",
 		"tslib": "^2.5.0",
 		"typescript": "^5.0.2",
-		"vite": "^4.3.9",
-		"vitest": "^0.28.5"
+		"vite": "^4.5.0",
+		"vitest": "^0.34"
 	},
 	"dependencies": {
 		"svelte-navigator": "^3.2.2"
