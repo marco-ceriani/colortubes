@@ -104,7 +104,7 @@ h6 {
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
     background-color: var(--clr-dark);
     color: hsl(60, 3.4%, 89%);
 }
