@@ -11,7 +11,7 @@
 	import { GameState, currentGame } from '../game/game';
 	import { distributeOnRows } from '../components/tubesLayout.js';
 
-    import { useNavigate } from "svelte-navigator";
+    import { navigate } from "svelte-routing";
 
     type ColorUsageCount = {[key: number]: number}
 
@@ -21,8 +21,6 @@
 	let currentColor: color = null;
 	let colorCounts: ColorUsageCount = {};
 	let playable = false;
-
-	const navigate = useNavigate();
 
     /* Tubes */
 

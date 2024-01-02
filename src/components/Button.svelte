@@ -1,17 +1,14 @@
 <script lang="ts">
-    import { link, useResolve } from "svelte-navigator";
+    import { link } from 'svelte-routing';
 
     export let href: string = null;
     export let disabled = false;
     export let spin = false;
 
-    const resolve = useResolve()
-    $: resolvedLink = href ? resolve(href) : ''
-
 </script>
 
 {#if href}
-	<a class="button" href={resolvedLink} role="button" use:link><slot /></a>
+	<a class="button" href={href} role="button" use:link><slot /></a>
 {:else}
 	<button class="button" {disabled} class:spinning={spin} on:click>
         {#if !spin}
