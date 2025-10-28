@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { Link } from "svelte-routing";
-
     interface Props {
         href?: string;
         disabled?: boolean;
@@ -19,7 +17,7 @@
 </script>
 
 {#if href}
-    <Link to={href} class="button" role="button">{@render children?.()}</Link>
+    <a {href} class="button" role="button">{@render children?.()}</a>
 {:else}
     <button class="button" {disabled} class:spinning={spin} {onclick}>
         {#if !spin}

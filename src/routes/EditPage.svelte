@@ -5,12 +5,11 @@
     import TubesContainer from "../components/TubesContainer.svelte";
     import PageFocus from "../components/PageFocus.svelte";
     import type { TubeClick } from "../components/events";
+    import { p, navigate } from "../router";
 
     import { Tube } from "../game/tube";
     import type { color } from "../game/tube";
     import { GameState, currentGame } from "../game/game";
-
-    import { navigate } from "svelte-routing";
 
     type ColorUsageCount = { [key: number]: number };
 
@@ -110,7 +109,7 @@
         if (playable) {
             const newGame = new GameState(removeEmpty(game.tubes));
             currentGame.set(newGame);
-            navigate(".");
+            navigate("/");
         }
     }
 </script>
@@ -119,7 +118,7 @@
 
 <ButtonsBar>
     <Button onclick={reset}>Reset</Button>
-    <Button href="/">Discard</Button>
+    <Button href={p("/")}>Discard</Button>
     <Button onclick={startPlay} disabled={!playable}>Play</Button>
 </ButtonsBar>
 

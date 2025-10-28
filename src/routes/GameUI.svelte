@@ -6,6 +6,7 @@
     import TubesContainer from "../components/TubesContainer.svelte";
     import EndModal from "../components/EndModal.svelte";
     import PageFocus from "../components/PageFocus.svelte";
+
     import type {
         TubeClick,
         TubeDrag,
@@ -18,6 +19,7 @@
         currentGame,
         randomGame,
     } from "../game/game.js";
+    import { p } from "../router";
     import type { GameMoveRecord } from "../game/game.js";
     import type { ExplorationResult } from "../game/solver";
 
@@ -163,7 +165,7 @@
 
 <ButtonsBar>
     <Button onclick={newGame}>New</Button>
-    <Button href="edit">Custom</Button>
+    <Button href={p("/edit")}>Custom</Button>
     <Button onclick={reset}>Reset</Button>
     {#if solverWorker && solution.length == 0}
         <Button onclick={solve} spin={solving}>Solve</Button>
