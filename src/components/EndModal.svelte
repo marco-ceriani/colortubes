@@ -1,15 +1,20 @@
 <script lang="ts">
-    import {fade} from 'svelte/transition'
+    import { run } from "svelte/legacy";
 
-    export let result: boolean
+    import { fade } from "svelte/transition";
 
-    let cssClass: string = "";
+    interface Props {
+        result: boolean;
+    }
 
-    $: message = result ? "🏅 You Win 🏅" : "You lose 😞"
-    $: cssClass = result ? "win" : "lose"
+    let { result }: Props = $props();
+
+    let cssClass = $derived(result ? "win" : "lose");
+
+    let message = $derived(result ? "🏅 You Win 🏅" : "You lose 😞");
 </script>
 
-<div class="modal {cssClass}" transition:fade={{delay: 100}}>
+<div class="modal {cssClass}" transition:fade={{ delay: 100 }}>
     <h2>{message}</h2>
 </div>
 
@@ -18,8 +23,8 @@
         --shadow-clr: grey;
         background-color: var(--clr-accent);
         color: var(--clr-dark);
-        border: .35rem solid var(--clr-accent2);
-        border-radius: .5rem;
+        border: 0.35rem solid var(--clr-accent2);
+        border-radius: 0.5rem;
         min-width: 25rem;
         min-height: 7rem;
         display: flex;
@@ -40,6 +45,7 @@
     .lose {
         background-color: hsl(0, 0%, 81.6%);
         border-color: var(--clr-dark);
-        --shadow-clr: hsl(0, 0%, 40.0%);
+        --shadow-clr: hsl(0, 0%, 40%);
     }
 </style>
+

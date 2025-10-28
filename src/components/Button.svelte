@@ -1,46 +1,62 @@
 <script lang="ts">
-    import { Link } from 'svelte-routing';
+    import { Link } from "svelte-routing";
 
-    export let href: string = null;
-    export let disabled = false;
-    export let spin = false;
+    interface Props {
+        href?: string;
+        disabled?: boolean;
+        spin?: boolean;
+        children?: import("svelte").Snippet;
+        onclick?: (event: Event) => void;
+    }
 
+    let {
+        href = null,
+        disabled = false,
+        spin = false,
+        children,
+        onclick,
+    }: Props = $props();
 </script>
 
 {#if href}
-    <Link to={href} class="button" role="button"><slot /></Link>
+    <Link to={href} class="button" role="button">{@render children?.()}</Link>
 {:else}
-	<button class="button" {disabled} class:spinning={spin} on:click>
+    <button class="button" {disabled} class:spinning={spin} {onclick}>
         {#if !spin}
-        <slot />
+            {@render children?.()}
         {/if}
     </button>
 {/if}
 
 <style>
-	:global(.button) {
-		display: inline-flex;
+    :global(.button) {
+        display: inline-flex;
         align-items: center;
         position: relative;
 
-		padding: 0.25em 0.875em;
+        padding: 0.25em 0.875em;
         font-size: 1rem;
-		text-decoration: none;
-		background-color: hsl(0, 0%, 90%);
-        background: linear-gradient(180deg, hsl(0, 0%, 95%) 0%, hsl(0, 0%, 72%) 100%);
+        text-decoration: none;
+        background-color: hsl(0, 0%, 90%);
+        background: linear-gradient(
+            180deg,
+            hsl(0, 0%, 95%) 0%,
+            hsl(0, 0%, 72%) 100%
+        );
         background-origin: border-box;
-		color: var(--clr-dark);
-		border-radius: 0.375em;
+        color: var(--clr-dark);
+        border-radius: 0.375em;
         border: none;
         cursor: pointer;
         touch-action: manipulation;
-        box-shadow: 0px 0.5px 1.5px rgba(54, 122, 246, 0.25),
-			inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2);
-
-	}
+        box-shadow:
+            0px 0.5px 1.5px rgba(54, 122, 246, 0.25),
+            inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2);
+    }
     :global(.button:is(:focus-visible, :hover):not([disabled])) {
-        box-shadow: 0px 0px .25em var(--clr-accent2),
-			0px 0px 0px .25em var(--clr-accent);
+        box-shadow:
+            0px 0px 0.25em var(--clr-accent2),
+            0px 0px 0px 0.25em var(--clr-accent);
     }
     :global(.button:disabled) {
         background: hsl(0, 0%, 50%);
@@ -71,5 +87,4 @@
             transform: rotate(1turn);
         }
     }
-
 </style>

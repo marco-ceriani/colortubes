@@ -5,8 +5,12 @@
     import Button from "../components/Button.svelte";
     import TubesContainer from "../components/TubesContainer.svelte";
     import EndModal from "../components/EndModal.svelte";
-    import PageFocus from "../components/PageFocus.svelte"
-    import type { TubeClick, TubeDrag, TubeDragDrop } from "../components/events"
+    import PageFocus from "../components/PageFocus.svelte";
+    import type {
+        TubeClick,
+        TubeDrag,
+        TubeDragDrop,
+    } from "../components/events";
 
     import {
         GameState,
@@ -15,31 +19,33 @@
         randomGame,
     } from "../game/game.js";
     import type { GameMoveRecord } from "../game/game.js";
-    import type { ExplorationResult } from "../game/solver"
+    import type { ExplorationResult } from "../game/solver";
 
-    import Solver from '../solve-worker?worker'
-    let solverWorker: Worker = null;
-    let solving: boolean = false;
+    import Solver from "../solve-worker?worker";
+    let solverWorker: Worker = $state(null);
+    let solving: boolean = $state(false);
 
-    let game: GameState = $currentGame;
-    let selected: number = null;
+    let game: GameState = $state($currentGame);
+    let selected: number = $state(null);
     let moves: GameMoveRecord[] = [];
-    let tubesEnabled: boolean[] = [];
+    let tubesEnabled: boolean[] = $state([]);
 
-    let solution: GameMoveRecord[] = [];
-    let highlight: number = null;
+    let solution: GameMoveRecord[] = $state([]);
+    let highlight: number = $state(null);
 
     onMount(async () => {
-        console.log('initializing web worker')
-        solverWorker = new Solver()
-        solverWorker.onmessage = function(evt: MessageEvent<ExplorationResult>) {
+        console.log("initializing web worker");
+        solverWorker = new Solver();
+        solverWorker.onmessage = function (
+            evt: MessageEvent<ExplorationResult>,
+        ) {
             if (evt.data.result === GameStatus.Won) {
-                solution = evt.data.actions
-                console.debug(solution)
+                solution = evt.data.actions;
+                console.debug(solution);
             }
-            solving = false
-        }
-    })
+            solving = false;
+        };
+    });
 
     function newGame() {
         console.debug("generating new game");
@@ -53,7 +59,7 @@
         highlight = null;
         moves = [];
         solution = [];
-        updateSelectableState()
+        updateSelectableState();
     }
 
     function solve() {
@@ -62,39 +68,38 @@
     }
 
     function isSelectable(id: number) {
-		if (selected === id) {
-			return true;
-		}
-		if (game.tubes[id].done) {
-			return false;
-		}
-		if (selected === null && game.tubes[id].empty) {
-			return false;
-		}
-		if (selected !== null && game.tubes[id].full) {
-			return false;
-		}
-		return true;
-	}
+        if (selected === id) {
+            return true;
+        }
+        if (game.tubes[id].done) {
+            return false;
+        }
+        if (selected === null && game.tubes[id].empty) {
+            return false;
+        }
+        if (selected !== null && game.tubes[id].full) {
+            return false;
+        }
+        return true;
+    }
 
-    function onTubeClick(evt: CustomEvent<TubeClick>) {
-        console.log(`clicked ${JSON.stringify(evt.detail)}`)
-        const newIndex: number = evt.detail.tubeId;
-        if (!isSelectable(newIndex))
-            return
+    function onTubeClick(evt: TubeClick) {
+        console.log(`clicked ${JSON.stringify(evt)}`);
+        const newIndex: number = evt.tubeId;
+        if (!isSelectable(newIndex)) return;
 
         if (selected === null) {
-            selectTube(newIndex)
+            selectTube(newIndex);
         } else if (selected === newIndex) {
             console.debug(`deselecting tube ${selected}`);
             selected = null;
         } else {
             moveWater(selected, newIndex);
-            updateAutoSolution(newIndex)
+            updateAutoSolution(newIndex);
             selected = null;
             highlight = null;
         }
-        updateSelectableState()
+        updateSelectableState();
     }
 
     function selectTube(newIndex: number) {
@@ -102,24 +107,23 @@
         console.debug(`selecting tube ${selected}`);
     }
 
-    function onTubeDnD(evt: CustomEvent<TubeDragDrop>) {
-        const { sourceTubeId, targetTubeId } = evt.detail
-        if (!isSelectable(targetTubeId))
-            return
+    function onTubeDnD(evt: TubeDragDrop) {
+        const { sourceTubeId, targetTubeId } = evt;
+        if (!isSelectable(targetTubeId)) return;
 
         if (selected === targetTubeId) {
             console.debug(`deselecting tube ${selected}`);
             selected = null;
         } else {
-            moveWater(sourceTubeId, targetTubeId)
-            updateAutoSolution(targetTubeId)
-            selected = null
+            moveWater(sourceTubeId, targetTubeId);
+            updateAutoSolution(targetTubeId);
+            selected = null;
         }
-        updateSelectableState()
+        updateSelectableState();
     }
 
     function updateSelectableState() {
-        tubesEnabled = game.tubes.map(tube => isSelectable(tube.id))
+        tubesEnabled = game.tubes.map((tube) => isSelectable(tube.id));
     }
 
     function moveWater(from: number, to: number) {
@@ -158,20 +162,27 @@
 <PageFocus />
 
 <ButtonsBar>
-    <Button on:click={newGame}>New</Button>
+    <Button onclick={newGame}>New</Button>
     <Button href="edit">Custom</Button>
-    <Button on:click={reset}>Reset</Button>
+    <Button onclick={reset}>Reset</Button>
     {#if solverWorker && solution.length == 0}
-        <Button on:click={solve} spin={solving}>Solve</Button>
+        <Button onclick={solve} spin={solving}>Solve</Button>
     {/if}
     {#if solution.length > 0}
-        <Button on:click={hint}>💡</Button>
+        <Button onclick={hint}>💡</Button>
     {/if}
 </ButtonsBar>
 
 <div class="cols-2">
-    <TubesContainer tubes={game.tubes} selectedId={selected} highlightId={highlight} enabled={tubesEnabled}
-        on:tube-click={onTubeClick} on:tube-drag={evt => selectTube(evt.detail.tubeId)} on:tube-drop={onTubeDnD}/>
+    <TubesContainer
+        tubes={game.tubes}
+        selectedId={selected}
+        highlightId={highlight}
+        enabled={tubesEnabled}
+        onclick={onTubeClick}
+        ondrag={(evt) => selectTube(evt.tubeId)}
+        ondrop={onTubeDnD}
+    />
 </div>
 
 {#if game.ended}
