@@ -52,6 +52,7 @@
             inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2);
     }
     :global(.button:is(:focus-visible, :hover):not([disabled])) {
+        outline: none;
         box-shadow:
             0px 0px 0.25em var(--clr-accent2),
             0px 0px 0px 0.25em var(--clr-accent);

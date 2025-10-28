@@ -71,7 +71,7 @@
 </script>
 
 <div class="tube-slot">
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
     <div
         class="tube"
         class:selected
@@ -88,39 +88,21 @@
     >
         <div class="plug"></div>
         {#each { length: 4 } as _, index}
-            {#if index <= tube.levels.length}
-                <div
-                    onclick={() => onClick(index)}
-                    class="waterblock"
-                    style:background-color="var(--clr-wtr{tube.levels[index]})"
-                    transition:fly|local={{
-                        y: -200,
-                        duration: 200,
-                        easing: linear,
-                    }}
-                ></div>
-            {:else}
-                <div
-                    onclick={() => onClick(index)}
-                    class="waterblock"
-                    style:background-color="var(--clr-none)"
-                    transition:fly|local={{
-                        y: -200,
-                        duration: 200,
-                        easing: linear,
-                    }}
-                ></div>
-            {/if}
+            {@const colorStyle =
+                index <= tube.levels.length
+                    ? `--clr-wtr${tube.levels[index]}`
+                    : "--clr-none"}
+            <div
+                onclick={() => onClick(index)}
+                class="waterblock"
+                style:background-color="var({colorStyle})"
+                transition:fly|local={{
+                    y: -200,
+                    duration: 200,
+                    easing: linear,
+                }}
+            ></div>
         {/each}
-        <!--
-		{#each tube.levels as level}
-			<div on:click={() => onClick(level)}
-				class="waterblock"
-				style:background-color="var(--clr-wtr{level})"
-				transition:fly|local={{ y: -200, duration: 200, easing: linear }}
-			/>
-		{/each}
-		-->
     </div>
     <h4>{tube.name}</h4>
 </div>
