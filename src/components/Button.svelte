@@ -27,6 +27,8 @@
 {/if}
 
 <style>
+    /* f2c763 ->  hsl(42, 85, 67), rgb(242, 199, 99) */
+    /* 8a2a2b -> hsl(359, 53%, 35%) */
     :global(.button) {
         display: inline-flex;
         align-items: center;
@@ -36,26 +38,33 @@
         font-size: 1rem;
         text-decoration: none;
         background-color: hsl(0, 0%, 90%);
-        background: linear-gradient(
+        /*background: linear-gradient(
             180deg,
             hsl(0, 0%, 95%) 0%,
             hsl(0, 0%, 72%) 100%
-        );
+        );*/
         background-origin: border-box;
         color: var(--clr-dark);
         border-radius: 0.375em;
         border: none;
         cursor: pointer;
         touch-action: manipulation;
+        /*box-shadow: 0 6px 16px hsla(359, 53%, 35%, 0.45);*/
+        /*box-shadow:
+            0 0 5px hsla(42, 85%, 67%, 0.5),
+            0 0 10px hsla(42, 85%, 67%, 0.5);*/
         box-shadow:
-            0px 0.5px 1.5px rgba(54, 122, 246, 0.25),
-            inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2);
+            0 0 5px hsla(359, 53%, 35%, 0.5),
+            0 0 10px hsla(359, 53%, 35%, 0.5);
     }
     :global(.button:is(:focus-visible, :hover):not([disabled])) {
         outline: none;
         box-shadow:
             0px 0px 0.25em var(--clr-accent2),
             0px 0px 0px 0.25em var(--clr-accent);
+    }
+    :global(.button:active) {
+        background-color: var(--clr-accent);
     }
     :global(.button:disabled) {
         background: hsl(0, 0%, 50%);

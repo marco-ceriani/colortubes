@@ -98,9 +98,9 @@ h6 {
     --clr-wtr18: hsl(0, 0%, 60%);
     --clr-wtr19: hsl(0, 0%, 95%);
     --clr-none: transparent;
-    --clr-dark: hsl(210, 33.3%, 9.4%);
-    --clr-accent: hsl(42, 84.6%, 66.9%);
-    --clr-accent2: hsl(359.4, 53.3%, 35.3%);
+    --clr-dark: hsl(210, 33.3%, 9.4%); /* #101820 */
+    --clr-accent: hsl(42, 84.6%, 66.9%); /* #f2c763 */ 
+    --clr-accent2: hsl(359.4, 53.3%, 35.3%); /* #8a2a2b */
 }
 
 body {

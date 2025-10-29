@@ -165,8 +165,8 @@
 
 <ButtonsBar>
     <Button onclick={newGame}>New</Button>
-    <Button href={p("/edit")}>Custom</Button>
-    <Button onclick={reset}>Reset</Button>
+    <Button onclick={reset}>Restart</Button>
+    <Button href={p("/edit")}>Edit</Button>
     {#if solverWorker && solution.length == 0}
         <Button onclick={solve} spin={solving}>Solve</Button>
     {/if}
