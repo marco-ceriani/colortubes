@@ -1,3 +1,5 @@
+@import "open-props/shadows";
+
 /*
   1. Use a more-intuitive box-sizing model.
 */
@@ -101,10 +103,24 @@ h6 {
     --clr-dark: hsl(210, 33.3%, 9.4%); /* #101820 */
     --clr-accent: hsl(42, 84.6%, 66.9%); /* #f2c763 */ 
     --clr-accent2: hsl(359.4, 53.3%, 35.3%); /* #8a2a2b */
+    --shadow-strength: 15%;
 }
 
 body {
     font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
     background-color: var(--clr-dark);
     color: hsl(60, 3.4%, 89%);
+    display: grid;
+
+    #app {
+        width: min(95vw, 50rem);
+        margin-inline: auto;
+        background-color: var(--clr-accent2);
+        margin-block: 1vw;
+        padding-block: 1rem;
+        padding-inline: clamp(1rem, 4vw, 3rem);
+        mask: radial-gradient(2rem at 2rem 2rem,rgba(0,0,0,0) 99%,#000) -2rem -2rem;
+        --webkit-mask: radial-gradient(2rem at 2rem 2rem,rgba(0,0,0,0) 99%,#000) -2rem -2rem;
+    }
 }
+

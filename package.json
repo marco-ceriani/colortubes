@@ -23,6 +23,7 @@
 		"vitest": "^1"
 	},
 	"dependencies": {
+		"open-props": "^1.7.16",
 		"sv-router": "^0.10.3"
 	}
 }

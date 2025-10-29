@@ -45,6 +45,7 @@
     .palette {
         display: flex;
         flex-flow: row wrap;
+        max-width: 36rem;
     }
     .cell {
         width: 2.5rem;
@@ -81,4 +82,3 @@
         outline-offset: -0.25rem;
     }
 </style>
-

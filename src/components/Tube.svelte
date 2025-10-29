@@ -117,6 +117,7 @@
         border: 2px solid white;
         border-radius: 0% 0% 100vw 100vw;
         overflow: hidden;
+        box-shadow: var(--shadow-4);
     }
     .tube.unplugged[data-selectable="true"]:hover,
     .tube.unplugged[data-selectable="true"].dropping {
@@ -126,7 +127,7 @@
         transform: translateY(-2rem);
     }
     .tube.highlight {
-        outline: dashed 0.25rem var(--clr-accent2);
+        outline: dashed 0.25rem var(--clr-dark);
         outline-offset: 0.5rem;
     }
     .waterblock {

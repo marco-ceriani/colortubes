@@ -109,7 +109,7 @@
         if (playable) {
             const newGame = new GameState(removeEmpty(game.tubes));
             currentGame.set(newGame);
-            navigate("/");
+            navigate("/game");
         }
     }
 </script>
