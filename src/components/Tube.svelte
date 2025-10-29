@@ -118,10 +118,23 @@
         border-radius: 0% 0% 100vw 100vw;
         overflow: hidden;
         box-shadow: var(--shadow-4);
+        position: relative;
     }
     .tube.unplugged[data-selectable="true"]:hover,
     .tube.unplugged[data-selectable="true"].dropping {
         box-shadow: 0px 0px 6px 4px hsl(66.6, 100%, 75%);
+    }
+    /* reflection */
+    .tube::after {
+        content: "";
+        display: inline-block;
+        position: absolute;
+        top: 15%;
+        right: 9%;
+        width: 0.2rem;
+        height: 50%;
+        background-color: hsla(51.2, 100%, 92%, 0.2);
+        border-radius: 100vw;
     }
     .selected {
         transform: translateY(-2rem);
