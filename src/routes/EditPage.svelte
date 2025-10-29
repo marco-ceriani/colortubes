@@ -13,7 +13,7 @@
 
     type ColorUsageCount = { [key: number]: number };
 
-    let game: GameState = $state($currentGame);
+    let game: GameState = $state(fillEmpty($currentGame));
     let tubesEnabled: boolean[] = $state([]);
     let currentColor: color = null;
     let colorCounts: ColorUsageCount = $derived(count(game.tubes));
@@ -45,6 +45,13 @@
 
     function reset() {
         game = new GameState(newTubes(game.tubes.length));
+    }
+
+    function fillEmpty(state: GameState) {
+        const tubes = state.tubes.map((tube, index) => {
+            return new Tube(tube.id, toFullTube(tube.levels));
+        });
+        return new GameState(tubes);
     }
 
     function removeEmpty(tubes: Tube[]) {

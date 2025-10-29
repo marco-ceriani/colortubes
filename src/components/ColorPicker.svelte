@@ -46,6 +46,7 @@
         display: flex;
         flex-flow: row wrap;
         max-width: 36rem;
+        margin-top: 0.5rem;
     }
     .cell {
         width: 2.5rem;
@@ -54,6 +55,9 @@
         display: inline-block;
         background-color: var(--color);
         position: relative;
+        text-shadow:
+            0 0 2px white,
+            0 0 2px white;
     }
     .curr {
         outline: black solid 0.125rem;

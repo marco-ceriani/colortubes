@@ -2,9 +2,6 @@
     import type { Tube } from "../game/tube";
     import type { TubeClick, TubeDrag, TubeDragDrop } from "./events";
 
-    import { fly } from "svelte/transition";
-    import { linear } from "svelte/easing";
-
     interface Props {
         tube: Tube;
         selected?: boolean;
@@ -26,15 +23,39 @@
     }: Props = $props();
     let dropping = $state(false);
 
-    const onClick = (level: number) => {
+    const onClick = (evt: Event, level: number) => {
+        evt.stopPropagation();
+        console.debug(`[Tube] onClick(${level})`);
         onclick({ tubeId: tube.id, level: level });
     };
+
+    let clickTimeout: number;
+    function onMouseDown(evt: MouseEvent) {
+        console.debug(`[Tube] onMouseDown(${evt})`);
+        clickTimeout = setTimeout(() => {
+            clickTimeout = null;
+        }, 500);
+    }
+
+    function onMouseUp(evt: MouseEvent, level: number) {
+        console.debug(`[Tube] onMouseUp(${level})`);
+        if (clickTimeout) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+            onclick({ tubeId: tube.id, level }); // single click
+        }
+    }
 
     /* Drag & Drop */
 
     const DRAG_DATA_TYPE = "game/tube";
 
     const dragStartHandler = (evt: DragEvent) => {
+        console.debug("[Tube] dragStartHandler()");
+        if (clickTimeout) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+        }
         evt.dataTransfer.setData(DRAG_DATA_TYPE, tube.id.toString());
         ondrag?.({ tubeId: tube.id });
     };
@@ -85,22 +106,20 @@
         ondragover={dragOver}
         ondragleave={dragLeave}
         ondrop={dropHanlder}
+        onmousedown={(event) => onMouseDown(event)}
+        onmouseup={(event) => onMouseUp(event, -1)}
     >
         <div class="plug"></div>
         {#each { length: 4 } as _, index}
             {@const colorStyle =
-                index <= tube.levels.length
+                index < tube.levels.length
                     ? `--clr-wtr${tube.levels[index]}`
                     : "--clr-none"}
             <div
-                onclick={() => onClick(index)}
-                class="waterblock"
+                onmousedown={(event) => onMouseDown(event)}
+                onmouseup={(event) => onMouseUp(event, index)}
+                class="waterblock {index >= tube.levels.length ? 'empty' : ''}"
                 style:background-color="var({colorStyle})"
-                transition:fly|local={{
-                    y: -200,
-                    duration: 200,
-                    easing: linear,
-                }}
             ></div>
         {/each}
     </div>
@@ -146,6 +165,11 @@
     .waterblock {
         content: "";
         height: 25%;
+        transition: height 0.2s ease-in;
+    }
+    .waterblock.empty {
+        background-color: var(--clr-none);
+        height: 0;
     }
     .plug {
         order: 99;
