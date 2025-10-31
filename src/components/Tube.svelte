@@ -109,7 +109,7 @@
         onmousedown={(event) => onMouseDown(event)}
         onmouseup={(event) => onMouseUp(event, -1)}
     >
-        <div class="plug"></div>
+        <div class="plug cylinder"></div>
         {#each { length: 4 } as _, index}
             {@const colorStyle =
                 index < tube.levels.length
@@ -118,8 +118,10 @@
             <div
                 onmousedown={(event) => onMouseDown(event)}
                 onmouseup={(event) => onMouseUp(event, index)}
-                class="waterblock {index >= tube.levels.length ? 'empty' : ''}"
-                style:background-color="var({colorStyle})"
+                class="waterblock cylinder {index >= tube.levels.length
+                    ? 'empty'
+                    : ''}"
+                style:--color="var({colorStyle})"
             ></div>
         {/each}
     </div>
@@ -127,15 +129,47 @@
 </div>
 
 <style>
+    .cylinder {
+        --top-border-color: hsla(0 0% 100% / 0.1);
+        background-color: var(--color, white);
+        position: relative;
+    }
+    .cylinder::before {
+        content: "";
+        display: block;
+        width: 100%;
+        height: calc(var(--ellipse-height) / 2);
+        position: absolute;
+        top: 100%;
+        background-color: var(--color);
+        border-bottom-left-radius: 50% 100%;
+        border-bottom-right-radius: 50% 100%;
+    }
+    .cylinder::after {
+        content: "";
+        display: block;
+        background-color: var(--color);
+        width: 100%;
+        height: var(--ellipse-height);
+        position: absolute;
+        top: calc(var(--ellipse-height) / -2);
+        border-radius: 50%;
+        border-width: 2px;
+        border-style: solid;
+        border-color: var(--top-border-color);
+    }
     .tube {
+        --block-height: 48px;
+        --ellipse-height: 1rem;
+        --tube-border-width: 2px;
         width: clamp(2.25rem, 6vw, 3rem);
-        height: 12rem;
+        height: calc(var(--block-height) * 4 + var(--ellipse-height));
+        padding-bottom: calc(var(--ellipse-height) / 2);
         margin-inline: auto;
         display: flex;
         flex-direction: column-reverse;
-        border: 2px solid white;
-        border-radius: 0% 0% 100vw 100vw;
-        overflow: hidden;
+        border: var(--tube-border-width) solid white;
+        border-radius: 50% / calc(var(--ellipse-height) / 2);
         box-shadow: var(--shadow-4);
         position: relative;
     }
@@ -144,7 +178,7 @@
         box-shadow: 0px 0px 6px 4px hsl(66.6, 100%, 75%);
     }
     /* reflection */
-    .tube::after {
+    .tube::before {
         content: "";
         display: inline-block;
         position: absolute;
@@ -155,6 +189,18 @@
         background-color: hsla(51.2, 100%, 92%, 0.2);
         border-radius: 100vw;
     }
+    .tube::after {
+        content: "";
+        width: 100%;
+        height: var(--ellipse-height);
+        position: absolute;
+        top: calc(var(--tube-border-width) * -1);
+        left: calc(var(--tube-border-width) * -1);
+        z-index: 5;
+        border-radius: 50% / calc(var(--ellipse-height) / 2);
+        border: var(--tube-border-width) solid white;
+        box-sizing: content-box;
+    }
     .selected {
         transform: translateY(-2rem);
     }
@@ -163,8 +209,7 @@
         outline-offset: 0.5rem;
     }
     .waterblock {
-        content: "";
-        height: 25%;
+        height: var(--block-height);
         transition: height 0.2s ease-in;
     }
     .waterblock.empty {
@@ -173,10 +218,13 @@
     }
     .plug {
         order: 99;
-        height: 0.75rem;
-        width: 3rem;
-        background-color: #8f3511;
-        border-bottom: 0.15rem solid #532411;
+        z-index: 7;
+        height: 1.25rem;
+        --color: #772d10;
+        --top-border-color: hsla(0 0% 0% / 0.2);
+    }
+    .plug::before {
+        border-bottom: 1px solid var(--top-border-color);
     }
     .unplugged .plug {
         visibility: hidden;
