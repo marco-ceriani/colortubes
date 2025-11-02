@@ -129,6 +129,7 @@
 </div>
 
 <style>
+    /* basic block */
     .cylinder {
         --top-border-color: hsla(0 0% 100% / 0.1);
         background-color: var(--color, white);
@@ -158,10 +159,12 @@
         border-style: solid;
         border-color: var(--top-border-color);
     }
+    /* tube container */
     .tube {
         --block-height: 48px;
         --ellipse-height: 1rem;
         --tube-border-width: 2px;
+        --transition-duration: 0.2s;
         width: clamp(2.25rem, 6vw, 3rem);
         height: calc(var(--block-height) * 4 + var(--ellipse-height));
         padding-bottom: calc(var(--ellipse-height) / 2);
@@ -210,7 +213,7 @@
     }
     .waterblock {
         height: var(--block-height);
-        transition: height 0.2s ease-in;
+        transition: height var(--transition-duration) ease-in;
     }
     .waterblock.empty {
         background-color: var(--clr-none);
@@ -222,6 +225,8 @@
         height: 1.25rem;
         --color: #772d10;
         --top-border-color: hsla(0 0% 0% / 0.2);
+        transition-behavior: allow-discrete;
+        transition: visibility 0s linear var(--transition-duration);
     }
     .plug::before {
         border-bottom: 1px solid var(--top-border-color);
