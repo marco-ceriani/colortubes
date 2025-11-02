@@ -99,6 +99,7 @@ h6 {
     --clr-wtr17: hsl(0, 0%, 30%);
     --clr-wtr18: hsl(0, 0%, 60%);
     --clr-wtr19: hsl(0, 0%, 95%);
+    --clr-wtr0: transparent;
     --clr-none: transparent;
     --clr-dark: hsl(210, 33.3%, 9.4%); /* #101820 */
     --clr-accent: hsl(42, 84.6%, 66.9%); /* #f2c763 */ 
