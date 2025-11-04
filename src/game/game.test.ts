@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Tube } from './tube';
-import { GameState, Wheel } from './game';
+import { GameState, Wheel, isMoveGood } from './game';
 
 describe('listing next actions', () => {
     it('any color to empty', () => {
@@ -87,6 +87,63 @@ describe('test won condition', () => {
     })
 })
 
+describe('filter actions', () => {
+    it('is uselees to move an entire tube to an empty one ', () => {
+        const state = new GameState([
+            new Tube(0, [1, 1, 1]),
+            new Tube(1, [2, 2, 1]),
+            new Tube(2, [2, 2]),
+            new Tube(3, []),
+        ])
+        expect(isMoveGood(state, { from: 0, to: 3 })).toBeFalsy()
+        expect(isMoveGood(state, { from: 2, to: 3 })).toBeFalsy()
+    })
+    it('is useless to split a block if the rest cannot be moved', () => {
+        const state = new GameState([
+            new Tube(0, [2, 2, 1, 1]),
+            new Tube(1, [2, 2, 1]),
+            new Tube(2, [1, 3, 3, 3]),
+            new Tube(3, [3]),
+        ])
+        expect(isMoveGood(state, { from: 0, to: 1 })).toBeFalsy()
+        // other tests on this state
+        expect(isMoveGood(state, { from: 2, to: 3 })).toBeTruthy()
+    })
+    it('is good to move a block from a different color to an empty tube', () => {
+        const state = new GameState([
+            new Tube(0, [2, 1, 1]),
+            new Tube(1, [2, 2, 1]),
+            new Tube(2, [2, 1]),
+            new Tube(3, []),
+        ])
+        expect(isMoveGood(state, { from: 0, to: 3 })).toBeTruthy()
+        expect(isMoveGood(state, { from: 1, to: 3 })).toBeTruthy()
+        expect(isMoveGood(state, { from: 2, to: 3 })).toBeTruthy()
+    })
+    it('is good to move a single block', () => {
+        const state = new GameState([
+            new Tube(0, [1, 2, 1]),
+            new Tube(1, [2, 2, 1]),
+            new Tube(2, [2, 1]),
+        ])
+        expect(isMoveGood(state, { from: 0, to: 1 })).toBeTruthy()
+        expect(isMoveGood(state, { from: 0, to: 2 })).toBeTruthy()
+        expect(isMoveGood(state, { from: 1, to: 0 })).toBeTruthy()
+        expect(isMoveGood(state, { from: 1, to: 2 })).toBeTruthy()
+        expect(isMoveGood(state, { from: 2, to: 0 })).toBeTruthy()
+        expect(isMoveGood(state, { from: 2, to: 1 })).toBeTruthy()
+    })
+    it('is good to split a block if the rest can be moved', () => {
+        const state = new GameState([
+            new Tube(0, [2, 2, 1, 1]),
+            new Tube(1, [2, 2, 1]),
+            new Tube(2, [1]),
+        ])
+        expect(isMoveGood(state, { from: 0, to: 1 })).toBeTruthy()
+        expect(isMoveGood(state, { from: 0, to: 2 })).toBeTruthy()
+    })
+})
+
 describe('random wheel', () => {
     const items = ['a', 'b', 'c', 'd', 'e']
     const wheel = new Wheel(items, [.1, .1, .3, 0, .5])
@@ -108,3 +165,4 @@ describe('random wheel', () => {
         expect(results['e']).toBeCloseTo(.5, 1)
     })
 })
+

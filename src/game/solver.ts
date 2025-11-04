@@ -1,5 +1,5 @@
 import type { GameState, GameMove, GameMoveRecord } from './game'
-import { GameStatus } from './game'
+import { GameStatus, isMoveGood } from './game'
 
 const C_PARAM = 2 // theoretically 1.415
 
@@ -11,25 +11,7 @@ export type ExplorationResult = {
 function goodActions(state: GameState, prevAction?: GameMoveRecord): GameMove[] {
     const legalActions = state.possibleActions()
 
-    return legalActions.filter(a => {
-        if (state.tubes[a.from].singleColor && state.tubes[a.to].empty) {
-            return false
-        }
-        if (a.from === prevAction?.toIndex && a.to === prevAction?.fromIndex) {
-            console.debug('filtered back move')
-            return false
-        }
-        return true
-    })
-}
-
-function useless(state, action) {
-    const fromTube = state.tubes[action.from]
-    const toTube = state.tubes[action.to]
-    if (fromTube.singleColor && toTube.empty) {
-        return true
-    }
-    return false
+    return legalActions.filter(a => isMoveGood(state, a))
 }
 
 export class TreeNode {

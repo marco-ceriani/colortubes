@@ -88,11 +88,17 @@ export class GameState {
             this.status = GameStatus.Won
         } else if (this.possibleActions().length === 0) {
             this.status = GameStatus.Lost
+        } else if (this.goodActions().length === 0) {
+            this.status = GameStatus.Lost
         }
     }
 
     possibleActions() {
         return getActions(this.tubes)
+    }
+
+    goodActions() {
+        return getActions(this.tubes).filter(a => isMoveGood(this, a))
     }
 
     get won() {
@@ -149,6 +155,28 @@ export class GameState {
     }
 }
 
+export function isMoveGood(state: GameState, move: GameMove): boolean {
+    const fromTube = state.tubes[move.from]
+    const toTube = state.tubes[move.to]
+    // An entire incomplete block should not be moved to an emtpy tube
+    if (fromTube.singleColor && toTube.empty) {
+        return false
+    }
+
+    // splitting a block is useless if the rest of the block cannot be moved
+    var availableSpace = 0
+    for (let tube of state.tubes) {
+        if (tube.id != move.from) {
+            availableSpace += tube.accepts(fromTube.topColor)
+        }
+    }
+    if (fromTube.topAmount > availableSpace) {
+        return false
+    }
+
+    return true
+}
+
 function randomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)]
 }
@@ -181,12 +209,12 @@ export function randomGame(numTubes: number = 0): GameState {
     for (let i = 0; i < 70; i++) {
         //console.debug(JSON.stringify(game.tubes))
         const src = new Wheel(game.tubes, game.tubes.map(t => t.topAmount)).randomItem()
-        
+
         const nonFull = game.tubes.filter(t => !t.full && t.id !== src.id)
         const dst = randomItem(nonFull)
-        
+
         const maxSize = Math.min((src.singleColor ? src.topAmount - 1 : src.topAmount), dst.emptySpace)
-        const size = new Wheel([1,2,3].splice(0,maxSize), [1, 3, 9].splice(maxSize)).randomItem()
+        const size = new Wheel([1, 2, 3].splice(0, maxSize), [1, 3, 9].splice(maxSize)).randomItem()
         //console.debug(`move ${i}: ${src.id} -> ${dst.id}, ${size} blocks`)
 
         const moved = src.levels.splice(-size)
@@ -196,12 +224,12 @@ export function randomGame(numTubes: number = 0): GameState {
     for (let i = 0; i < 100 && numEmpty < 2; i++) {
         const nonEmpty = game.tubes.filter(t => !t.empty)
         const src = randomItem(nonEmpty)
-        
+
         const destinations = game.tubes.filter(t => !t.full && t.levels.length > src.levels.length)
         if (destinations.length > 0) {
             const dst = randomItem(destinations)
             //console.debug(`move: ${src.id} -> ${dst.id}`)
-    
+
             const moved = src.levels.splice(-1)
             dst.levels.push(...moved)
         }

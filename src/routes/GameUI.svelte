@@ -43,7 +43,7 @@
         ) {
             if (evt.data.result === GameStatus.Won) {
                 solution = evt.data.actions;
-                console.debug(solution);
+                console.debug(evt.data.actions);
             }
             solving = false;
         };
