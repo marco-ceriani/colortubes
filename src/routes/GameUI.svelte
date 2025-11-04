@@ -47,6 +47,9 @@
             }
             solving = false;
         };
+        if (solverWorker) {
+            solve();
+        }
     });
 
     function newGame() {
@@ -149,6 +152,7 @@
                 solution = solution.slice(1);
             } else {
                 solution = [];
+                solve();
             }
         }
     }

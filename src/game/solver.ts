@@ -94,12 +94,13 @@ export function search_mcts(state: GameState): ExplorationResult {
     let bestResult: GameStatus = GameStatus.Playing
     let bestReward = -Infinity
     let bestActions: GameMoveRecord[] = []
+    let bestElapsed: number = 0
 
     const startTime = new Date().valueOf();
     let counter = 0;
 
     let elapsed = 0
-    while (elapsed < 1000 || bestResult !== GameStatus.Won && elapsed < 5000) {
+    while (elapsed < 300 || bestResult !== GameStatus.Won && elapsed < 5000) {
         const [leaf, preActions] = traverse(root)
         const [finalState, rolloutActions] = rollout(leaf.state, maxRollout)
         const actions = preActions.concat(rolloutActions)
@@ -110,12 +111,14 @@ export function search_mcts(state: GameState): ExplorationResult {
             bestActions = actions
             bestReward = simulationReward
             bestResult = finalState.status
+            bestElapsed = elapsed
         }
         counter++
         elapsed = new Date().valueOf() - startTime
     }
 
-    console.info(`best result: ${bestResult} with value ${bestReward.toFixed(2)} after ${counter} iterations (${elapsed}ms)`)
+    console.info(`best result: ${GameStatus[bestResult]} with value ${bestReward.toFixed(2)} in ${bestElapsed}ms`)
+    console.info(`total exploration: ${counter} iterations ${elapsed}ms)`)
     return {
         result: bestResult,
         actions: bestActions
@@ -156,7 +159,7 @@ function rollout(game: GameState, maxSteps = 20): [GameState, GameMoveRecord[]] 
 
 function evaluate(state: GameState, actionsList: GameMoveRecord[]) {
     if (state.won) {
-        return 50.0 / actionsList.length
+        return 1.0 / (1.0 + actionsList.length / 50.0)
     } else if (state.lost) {
         return 0
     }
