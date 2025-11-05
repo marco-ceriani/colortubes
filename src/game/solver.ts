@@ -105,7 +105,7 @@ export function search_mcts(state: GameState): ExplorationResult {
         const [finalState, rolloutActions] = rollout(leaf.state, maxRollout)
         const actions = preActions.concat(rolloutActions)
         const simulationReward = evaluate(finalState, actions)
-        console.debug(`run result ${simulationReward}`)
+        //console.debug(`run result ${simulationReward}`)
         leaf.backpropagate(simulationReward)
         if (simulationReward > bestReward) {
             bestActions = actions

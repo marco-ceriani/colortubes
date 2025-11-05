@@ -36,7 +36,7 @@
     let highlight: number = $state(null);
 
     onMount(async () => {
-        console.log("initializing web worker");
+        console.log("[UI] initializing web worker");
         solverWorker = new Solver();
         solverWorker.onmessage = function (
             evt: MessageEvent<ExplorationResult>,
@@ -51,12 +51,6 @@
             solve();
         }
     });
-
-    function newGame() {
-        console.debug("generating new game");
-        currentGame.set(randomGame());
-        reset();
-    }
 
     function reset() {
         game = $currentGame;
@@ -89,14 +83,14 @@
     }
 
     function onTubeClick(evt: TubeClick) {
-        console.log(`clicked ${JSON.stringify(evt)}`);
+        console.log(`[UI] clicked ${JSON.stringify(evt)}`);
         const newIndex: number = evt.tubeId;
         if (!isSelectable(newIndex)) return;
 
         if (selected === null) {
             selectTube(newIndex);
         } else if (selected === newIndex) {
-            console.debug(`deselecting tube ${selected}`);
+            console.debug(`[UI] deselecting tube ${selected}`);
             selected = null;
         } else {
             moveWater(selected, newIndex);
@@ -109,7 +103,7 @@
 
     function selectTube(newIndex: number) {
         selected = newIndex;
-        console.debug(`selecting tube ${selected}`);
+        console.debug(`[UI] selecting tube ${selected}`);
     }
 
     function onTubeDnD(evt: TubeDragDrop) {
@@ -117,7 +111,7 @@
         if (!isSelectable(targetTubeId)) return;
 
         if (selected === targetTubeId) {
-            console.debug(`deselecting tube ${selected}`);
+            console.debug(`[UI] deselecting tube ${selected}`);
             selected = null;
         } else {
             moveWater(sourceTubeId, targetTubeId);
@@ -135,10 +129,10 @@
         try {
             const historyEntry = game.historyEntry({ from, to });
             game = game.applyMove({ from, to });
-            console.info(`applied move ${JSON.stringify(historyEntry)}`);
+            console.info(`[UI] applied move ${JSON.stringify(historyEntry)}`);
             moves = [...moves, historyEntry];
         } catch (error) {
-            console.warn(error.message);
+            console.warn("[UI]", error.message);
         }
     }
 
@@ -161,6 +155,14 @@
         if (solution.length > 0) {
             selected = solution[0].fromIndex;
             highlight = solution[0].toIndex;
+        }
+    }
+
+    function onKeyDown(evt: KeyboardEvent) {
+        console.debug("[UI] pressed key ", evt.key);
+        const tube = game.tubes.find((t) => t.name === evt.key.toUpperCase());
+        if (tube) {
+            onTubeClick({ tubeId: tube.id });
         }
     }
 </script>
@@ -193,6 +195,8 @@
 {#if game.ended}
     <EndModal result={game.status == GameStatus.Won} />
 {/if}
+
+<svelte:window onkeydown={onKeyDown} />
 
 <style>
     .cols-2 {
