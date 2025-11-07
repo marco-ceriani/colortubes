@@ -161,7 +161,7 @@
     }
     /* tube container */
     .tube {
-        --block-height: 48px;
+        --block-height: 44px;
         --ellipse-height: 1rem;
         --tube-border-width: 2px;
         --transition-duration: 0.2s;
@@ -199,7 +199,7 @@
         position: absolute;
         top: calc(var(--tube-border-width) * -1);
         left: calc(var(--tube-border-width) * -1);
-        z-index: 5;
+        z-index: 2;
         border-radius: 50% / calc(var(--ellipse-height) / 2);
         border: var(--tube-border-width) solid white;
         box-sizing: content-box;
@@ -221,7 +221,7 @@
     }
     .plug {
         order: 99;
-        z-index: 7;
+        z-index: 3;
         height: 1.25rem;
         --color: #772d10;
         --top-border-color: hsla(0 0% 0% / 0.2);
@@ -236,7 +236,7 @@
     }
     h4 {
         text-align: center;
-        margin-block-start: 0.5rem;
+        margin-block-start: 0.375rem;
         font-size: 1.25rem;
     }
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { p, navigate } from "../router";
-    import { GameState, currentGame, randomGame } from "../game/game";
+    import { currentGame, randomGame } from "../game/game";
 
     function startGame() {
         currentGame.set(randomGame());

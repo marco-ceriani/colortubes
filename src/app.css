@@ -101,9 +101,9 @@ h6 {
     --clr-wtr19: hsl(0, 0%, 95%);
     --clr-wtr0: transparent;
     --clr-none: transparent;
-    --clr-dark: hsl(210, 33.3%, 9.4%); /* #101820 */
-    --clr-accent: hsl(42, 84.6%, 66.9%); /* #f2c763 */ 
-    --clr-accent2: hsl(359.4, 53.3%, 35.3%); /* #8a2a2b */
+    --clr-dark: hsl(210 33.3% 9.4%); /* #101820 */
+    --clr-accent: hsl(42 84.6% 66.9%); /* #f2c763 */ 
+    --clr-accent2: hsl(359.4 53.3% 35.3%); /* #8a2a2b */
     --shadow-strength: 15%;
 }
 
@@ -123,5 +123,16 @@ body {
         mask: radial-gradient(2rem at 2rem 2rem,rgba(0,0,0,0) 99%,#000) -2rem -2rem;
         --webkit-mask: radial-gradient(2rem at 2rem 2rem,rgba(0,0,0,0) 99%,#000) -2rem -2rem;
     }
+}
+
+button {
+    cursor: pointer;
+    padding: 0.25em 0.875em;
+    border: none;
+    border-radius: 0.375em;
+    box-shadow:
+        0 0 2px hsla(359, 3%, 35%, 0.5),
+        0 0 4px hsla(359, 3%, 35%, 0.5);
+    outline: var(--clr-accent2);
 }
 

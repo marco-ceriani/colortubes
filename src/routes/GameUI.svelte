@@ -7,11 +7,7 @@
     import EndModal from "../components/EndModal.svelte";
     import PageFocus from "../components/PageFocus.svelte";
 
-    import type {
-        TubeClick,
-        TubeDrag,
-        TubeDragDrop,
-    } from "../components/events";
+    import type { TubeClick, TubeDragDrop } from "../components/events";
 
     import {
         GameState,
@@ -19,7 +15,7 @@
         currentGame,
         randomGame,
     } from "../game/game.js";
-    import { p } from "../router";
+    import { p, navigate } from "../router";
     import type { GameMoveRecord } from "../game/game.js";
     import type { ExplorationResult } from "../game/solver";
 
@@ -165,6 +161,15 @@
             onTubeClick({ tubeId: tube.id });
         }
     }
+
+    function onModalClose(action: "new-game" | "quit") {
+        if (action === "new-game") {
+            currentGame.set(randomGame());
+            reset();
+        } else if (action === "quit") {
+            navigate("/");
+        }
+    }
 </script>
 
 <PageFocus />
@@ -172,9 +177,6 @@
 <ButtonsBar>
     <Button href={p("/")}>Quit</Button>
     <Button onclick={reset}>Restart</Button>
-    {#if solverWorker && solution.length == 0}
-        <Button onclick={solve} spin={solving}>Solve</Button>
-    {/if}
     {#if solution.length > 0}
         <Button onclick={hint}>💡</Button>
     {/if}
@@ -193,7 +195,7 @@
 </div>
 
 {#if game.ended}
-    <EndModal result={game.status == GameStatus.Won} />
+    <EndModal result={game.status == GameStatus.Won} onclose={onModalClose} />
 {/if}
 
 <svelte:window onkeydown={onKeyDown} />
