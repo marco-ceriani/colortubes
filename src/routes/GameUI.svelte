@@ -55,6 +55,7 @@
         moves = [];
         solution = [];
         updateSelectableState();
+        solve();
     }
 
     function solve() {
@@ -162,9 +163,11 @@
         }
     }
 
-    function onModalClose(action: "new-game" | "quit") {
+    function onModalClose(action: "new-game" | "quit" | "restart") {
         if (action === "new-game") {
             currentGame.set(randomGame());
+            reset();
+        } else if (action === "restart") {
             reset();
         } else if (action === "quit") {
             navigate("/");

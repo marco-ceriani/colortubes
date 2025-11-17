@@ -3,7 +3,7 @@
 
     interface Props {
         result: boolean;
-        onclose?: (action: "new-game" | "quit") => void;
+        onclose?: (action: "new-game" | "quit" | "restart") => void;
     }
 
     let { result, onclose }: Props = $props();
@@ -21,7 +21,11 @@
 <dialog class={cssClass} bind:this={dialog}>
     <h2>{message}</h2>
     <div class="btn-group">
-        <button onclick={() => onclose("new-game")}>New game</button>
+        {#if result}
+            <button onclick={() => onclose("new-game")}>New game</button>
+        {:else}
+            <button onclick={() => onclose("restart")}>Retry</button>
+        {/if}
         <button onclick={() => onclose("quit")}>Quit</button>
     </div>
 </dialog>
@@ -76,12 +80,12 @@
         }
     }
     .lose {
-        background-color: hsl(0, 0%, 81.6%);
         border-color: var(--clr-dark);
+        background-color: hsl(0, 0%, 81.6%);
         --shadow-clr: hsl(0, 0%, 40%);
 
-        &::before,
-        &::after {
+        h2::before,
+        h2::after {
             content: "😞";
         }
     }
