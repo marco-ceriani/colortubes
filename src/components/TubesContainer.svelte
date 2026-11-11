@@ -1,6 +1,5 @@
 <script lang="ts">
     import TubeComponent from "./Tube.svelte";
-    import { distributeOnRows } from "./tubesLayout";
 
     import type { TubeClick, TubeDrag, TubeDragDrop } from "./events";
     import type { Tube } from "../game/tube";
@@ -23,32 +22,42 @@
         ondrag,
         ondrop,
     }: Props = $props();
-
-    let rows = $derived(distributeOnRows(tubes));
 </script>
 
 <div class="tubes-container">
-    {#each rows as row}
-        <div class="tubes-row">
-            {#each row as tube (tube.id)}
-                <TubeComponent
-                    {tube}
-                    selected={selectedId === tube.id}
-                    selectable={enabled[tube.id]}
-                    highlight={highlightId === tube.id}
-                    {onclick}
-                    {ondrag}
-                    {ondrop}
-                />
-            {/each}
-        </div>
+    {#each tubes as tube}
+        <TubeComponent
+            {tube}
+            selected={selectedId === tube.id}
+            selectable={enabled[tube.id]}
+            highlight={highlightId === tube.id}
+            {onclick}
+            {ondrag}
+            {ondrop}
+        />
     {/each}
 </div>
 
 <style>
-    .tubes-row {
-        display: flex;
-        justify-content: space-around;
-        margin-block: 3rem;
+    .tubes-container {
+        margin-top: 1rem;
+        display: grid;
+        grid-auto-columns: 1fr;
+        grid-auto-flow: dense;
+    }
+    :global(.tubes-container > .tube-slot) {
+        --num-rows: 1;
+        grid-row: calc(
+            round(
+                up,
+                sibling-index() / round(up, sibling-count() / var(--num-rows))
+            )
+        );
+    }
+    :global(.tubes-container:has(> :nth-child(7)) > .tube-slot) {
+        --num-rows: 2;
+    }
+    :global(.tubes-container:has(> :nth-child(15)) > .tube-slot) {
+        --num-rows: 3;
     }
 </style>

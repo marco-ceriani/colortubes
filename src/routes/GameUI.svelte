@@ -185,28 +185,18 @@
     {/if}
 </ButtonsBar>
 
-<div class="cols-2">
-    <TubesContainer
-        tubes={game.tubes}
-        selectedId={selected}
-        highlightId={highlight}
-        enabled={tubesEnabled}
-        onclick={onTubeClick}
-        ondrag={(evt) => selectTube(evt.tubeId)}
-        ondrop={onTubeDnD}
-    />
-</div>
+<TubesContainer
+    tubes={game.tubes}
+    selectedId={selected}
+    highlightId={highlight}
+    enabled={tubesEnabled}
+    onclick={onTubeClick}
+    ondrag={(evt) => selectTube(evt.tubeId)}
+    ondrop={onTubeDnD}
+/>
 
 {#if game.ended}
     <EndModal result={game.status == GameStatus.Won} onclose={onModalClose} />
 {/if}
 
 <svelte:window onkeydown={onKeyDown} />
-
-<style>
-    .cols-2 {
-        display: grid;
-        grid-template-columns: 1fr max-content;
-        gap: 1.5rem;
-    }
-</style>
